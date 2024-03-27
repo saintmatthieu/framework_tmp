@@ -1,54 +1,71 @@
-# C++ objects and libs
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.so.*
-*.dll
-*.dylib
-
-# Qt-es
-object_script.*.Release
-object_script.*.Debug
-*_plugin_import.cpp
-/.qmake.cache
-/.qmake.stash
-*.pro.user
-*.pro.user.*
-*.qbs.user
-*.qbs.user.*
-*.moc
-moc_*.cpp
-moc_*.h
-qrc_*.cpp
-ui_*.h
+.*,
+*~
+*.swp
+*.autosave
+.qped
+.directory
+.idea
+.vscode/
+/builds
+/build_overrides.cmake
+build.release
+build.debug
+build.install
+build.tooldata
+build.qtc
+build-*
+win32build
+win32install
+win64build
+win64install
+build.xcode
+applebuild
+build.artifacts
+build.symbols
+vtest.artifacts
+MuseScorePortable
+/*.config
+/*.creator
+/*.files
+/*.includes
+*.user
+/share/locale/*placeholder.ts
+/share/locale/*.qm
+/share/instruments/tsv
+Doc
+DocLib
+build.qt5
+*.sfd~
+/.project
+mscore/revision.h
+local_build_revision.env
+.DS_Store
+CMakeLists.txt.user.*
 *.qmlc
 *.jsc
-Makefile*
-*build-*
-*.qm
-*.prl
+vtest/html
+vtest/compare
+thirdparty/mupdf-qt
+vtest/LOG
+vtest/META-INF
+vtest/Thumbnails
+vtest/Pictures
+.vs
+dependencies
 
-# Qt unit tests
-target_wrapper.*
+# Downloaded files during build process
+VERSION
+/mscore/data/mscore.aps
+/msvc.*
 
-# QtCreator
-*.autosave
+# Files created during build process
+/thirdparty/lame/config.h
+/thirdparty/flac/flac-1.3.4/config.h
+/thirdparty/opusenc/libopusenc-0.2.1/config.h
 
-# QtCreator Qml
-*.qmlproject.user
-*.qmlproject.user.*
+# Backup Files created by Merging Softwares (Example: Meld)
+*.orig
 
-# QtCreator CMake
-CMakeLists.txt.user*
+temp_*
 
-# QtCreator 4.8< compilation database
-compile_commands.json
-
-# QtCreator local machine specific files for imported projects
-*creator.user*
-
-*_qmlcache.qrc
+*.local.cmake
