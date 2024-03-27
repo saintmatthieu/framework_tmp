@@ -22,7 +22,7 @@ if (NOT USE_LOCAL_MUSE_FRAMEWORK)
     include(FetchContent)
     FetchContent_Declare(
       muse_framework
-      GIT_REPOSITORY git@github.com:musescore/framework.git #"D:/Dev/Muse/framework"
+      GIT_REPOSITORY git@github.com:musescore/framework.git
       GIT_TAG        HEAD
     )
 
@@ -67,7 +67,7 @@ set(APP_REVISION "" CACHE STRING "Build revision")
 # Modules framework (alphabetical order please)
 option(MU_BUILD_ACCESSIBILITY_MODULE "Build accessibility module" OFF)
 option(MU_BUILD_ACCESSIBILITY_TESTS "Build accessibility tests" OFF)
-option(MU_BUILD_UI_MODULE "Build ui and uicomponets modules" OFF)
+option(MU_BUILD_UI_MODULE "Build ui and uicomponets modules" ON)
 option(MU_BUILD_UI_TESTS "Build ui and uicomponets tests" OFF)
 option(MU_BUILD_SHORTCUTS_MODULE "Build ui and shortcuts modules" OFF)
 option(MU_BUILD_SHORTCUTS_TESTS "Build ui and shortcuts tests" OFF)
@@ -120,6 +120,9 @@ else()
     add_definitions(-DMU_APP_INSTALL_SUFFIX="")
     add_definitions(-DMU_APP_INSTALL_PREFIX="")
     add_definitions(-DMU_APP_INSTALL_NAME="")
+
+    add_definitions(-DMU_BUILD_UI_MODULE)
+
 endif()
 
 set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/thirdparty)
