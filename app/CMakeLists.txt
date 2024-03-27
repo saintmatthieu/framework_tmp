@@ -15,12 +15,33 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-set(MUSE_FRAMEWORK_PATH ${PROJECT_ROOT_DIR}/src/framework)
+set(USE_LOCAL_MUSE_FRAMEWORK ON)
+
+if (NOT USE_LOCAL_MUSE_FRAMEWORK)
+    set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/_deps)
+    include(FetchContent)
+    FetchContent_Declare(
+      muse_framework
+      GIT_REPOSITORY git@github.com:musescore/framework.git #"D:/Dev/Muse/framework"
+      GIT_TAG        HEAD
+    )
+
+    FetchContent_GetProperties(muse_framework)
+    if(NOT muse_framework_POPULATED)
+      FetchContent_Populate(muse_framework)
+    endif()
+else()
+
+    set(muse_framework_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
+    set(muse_framework_BINARY_DIR ${PROJECT_BINARY_DIR}/muse_framework)
+
+endif()
+
+set(MUSE_FRAMEWORK_PATH ${muse_framework_SOURCE_DIR})
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}
-    ${PROJECT_ROOT_DIR}/build/cmake
+    ${MUSE_FRAMEWORK_PATH}/build/cmake
     ${CMAKE_MODULE_PATH}
     )
 
@@ -149,7 +170,7 @@ if (MU_BUILD_UNIT_TESTS)
     add_subdirectory(thirdparty/googletest)
 endif() #MU_BUILD_UNIT_TESTS
 
-add_subdirectory(${MUSE_FRAMEWORK_PATH}/global muse_global) # should be first to work pch
+add_subdirectory(${muse_framework_SOURCE_DIR}/framework ${muse_framework_BINARY_DIR})
 add_subdirectory(src)
 
 ###########################################

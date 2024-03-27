@@ -54,7 +54,7 @@ endif()
 
 set(LINK_LIB
     ${QT_LIBRARIES}
-    global
+    muse::global
 )
 
 if (MU_BUILD_UI_MODULE)
