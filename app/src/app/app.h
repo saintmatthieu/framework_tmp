@@ -19,30 +19,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_LOGREMOVER_H
-#define MU_LOGREMOVER_H
 
-#include <gtest/gtest_prod.h>
+#ifndef MU_APP_APP_H
+#define MU_APP_APP_H
 
-#include "types/string.h"
-#include "types/datetime.h"
-#include "io/path.h"
+#include <QList>
 
-namespace mu {
-class LogRemover
+#include "modularity/imodulesetup.h"
+#include "modularity/ioc.h"
+
+namespace au::app {
+class App
 {
-public:
+    mu::Inject<mu::IApplication> muapplication;
 
-    static void removeLogs(const io::path_t& logsDir, int olderThanDays, const String& pattern);
+public:
+    App();
+
+    void addModule(mu::modularity::IModuleSetup* module);
+
+    int run(int argc, char** argv);
 
 private:
 
-    FRIEND_TEST(Global_LogRemoverTests, ParseDate);
-
-    static void scanDir(const io::path_t& logsDir, io::paths_t& files);
-    static Date parseDate(const String& fileName);
-    static void removeFiles(const io::paths_t& files);
+    QList<mu::modularity::IModuleSetup*> m_modules;
 };
 }
 
-#endif // MU_LOGREMOVER_H
+#endif // MU_APP_APP_H

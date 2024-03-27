@@ -166,8 +166,6 @@ else()
         ${CMAKE_CURRENT_LIST_DIR}/internal/application.h
         ${CMAKE_CURRENT_LIST_DIR}/internal/globalconfiguration.cpp
         ${CMAKE_CURRENT_LIST_DIR}/internal/globalconfiguration.h
-        ${CMAKE_CURRENT_LIST_DIR}/internal/interactive.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/internal/interactive.h
         ${CMAKE_CURRENT_LIST_DIR}/internal/cryptographichash.cpp
         ${CMAKE_CURRENT_LIST_DIR}/internal/cryptographichash.h
         ${CMAKE_CURRENT_LIST_DIR}/internal/invoker.cpp
@@ -189,6 +187,13 @@ else()
         ${CMAKE_CURRENT_LIST_DIR}/deprecated/qzipwriter_p.h
         )
 
+    if (MU_BUILD_UI_MODULE)
+        set(MODULE_SRC ${MODULE_SRC}
+            ${CMAKE_CURRENT_LIST_DIR}/internal/interactive.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/internal/interactive.h
+        )
+    endif()
+
     include(GetPlatformInfo)
 
     if (OS_IS_MAC)
@@ -207,18 +212,10 @@ else()
     endif()
 endif()
 
-set(FS_LIB )
-# The use of `filesystem` is disabled until
-# I figure out how to use it correctly for all platforms and compilers (including MinGW)
-# (igor.korsukov@gmail.com)
-#if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#    set(FS_LIB stdc++fs)
-#endif()
-
 include(GetCompilerInfo)
 set(Z_LIB )
 if (CC_IS_MSVC)
-    include(FindStaticLibrary)
+    include(FindZlibStatic)
     set(Z_LIB zlibstat)
     set(Z_INCLUDE ${DEPENDENCIES_INC}/zlib)
 elseif (CC_IS_EMSCRIPTEN)
@@ -232,7 +229,6 @@ list(APPEND MODULE_INCLUDE
     )
 
 list(APPEND MODULE_LINK
-    ${FS_LIB}
     ${Z_LIB}
 )
 
