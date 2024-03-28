@@ -25,6 +25,7 @@
 #include <vector>
 #include <QString>
 #include <QMetaType>
+#include <QMap>
 
 #include "view/iconcodes.h" // IWYU pragma: export
 #include "workspace/workspacetypes.h"
