@@ -15,14 +15,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(USE_LOCAL_MUSE_FRAMEWORK ON)
+set(USE_LOCAL_MUSE_FRAMEWORK OFF)
 
 if (NOT USE_LOCAL_MUSE_FRAMEWORK)
     set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/_deps)
     include(FetchContent)
     FetchContent_Declare(
       muse_framework
-      GIT_REPOSITORY git@github.com:musescore/framework.git
+      GIT_REPOSITORY git@github.com:musescore/framework_tmp.git
       GIT_TAG        HEAD
     )
 
