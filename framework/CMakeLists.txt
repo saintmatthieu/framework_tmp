@@ -14,6 +14,11 @@ if (MU_BUILD_EXTENSIONS_MODULE)
     add_subdirectory(extensions)
 endif()
 
+if (MU_BUILD_LANGUAGES_MODULE)
+    add_subdirectory(languages)
+endif()
+
+
 if (MU_BUILD_UI_MODULE)
     add_subdirectory(ui)
     add_subdirectory(uicomponents)
