@@ -27,18 +27,6 @@ static const std::string DEFAULT_WORKSPACE_NAME("Default");
 
 using DataKey = const char*;
 inline constexpr DataKey WS_Undefined("");
-
-// inline std::string key_to_string(DataKey key)
-// {
-//     switch (key) {
-//     case DataKey::Undefined: return std::string();
-//     case DataKey::UiSettings: return std::string("ui_settings");
-//     case DataKey::UiStates: return std::string("ui_states");
-//     case DataKey::UiToolConfigs: return std::string("ui_toolconfigs");
-//     case DataKey::Palettes: return std::string("palettes");
-//     }
-//     return std::string();
-// }
 }
 
 #endif // MU_WORKSPACE_WORKSPACETYPES_H
