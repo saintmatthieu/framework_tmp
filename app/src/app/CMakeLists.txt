@@ -58,8 +58,8 @@ set(LINK_LIB
 )
 
 if (MU_BUILD_UI_MODULE)
-    list(APPEND LINK_LIB ui)
-    list(APPEND LINK_LIB uicomponents)
+    list(APPEND LINK_LIB muse::ui)
+    list(APPEND LINK_LIB muse::uicomponents)
 endif()
 
 # ...
