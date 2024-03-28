@@ -73,10 +73,18 @@ option(MU_BUILD_EXTENSIONS_MODULE "Build extensions module" ON)
 option(MU_BUILD_EXTENSIONS_TESTS "Build extensions tests" OFF)
 option(MU_BUILD_LANGUAGES_MODULE "Build languages module" ON)
 option(MU_BUILD_LANGUAGES_TESTS "Build languages tests" OFF)
+option(MU_BUILD_MIDI_MODULE "Build midi module" ON)
+option(MU_BUILD_MIDI_TESTS "Build midi tests" OFF)
+option(MU_BUILD_MULTIINSTANCES_MODULE "Build multiinstances module" ON)
+option(MU_BUILD_MULTIINSTANCES_TESTS "Build multiinstances tests" OFF)
+option(MU_BUILD_NETWORK_MODULE "Build network module" ON)
+option(MU_BUILD_NETWORK_TESTS "Build network tests" OFF)
+option(MU_BUILD_SHORTCUTS_MODULE "Build shortcuts module" ON)
+option(MU_BUILD_SHORTCUTS_TESTS "Build shortcuts tests" OFF)
 option(MU_BUILD_UI_MODULE "Build ui and uicomponets modules" ON)
 option(MU_BUILD_UI_TESTS "Build ui and uicomponets tests" OFF)
-option(MU_BUILD_SHORTCUTS_MODULE "Build ui and shortcuts modules" OFF)
-option(MU_BUILD_SHORTCUTS_TESTS "Build ui and shortcuts tests" OFF)
+option(MU_BUILD_WORKSPACE_MODULE "Build workspace module" ON)
+option(MU_BUILD_WORKSPACE_TESTS "Build workspace tests" OFF)
 
 # Modules (alphabetical order please)
 option(MU_BUILD_APPSHELL_MODULE "Build appshell module" OFF)
@@ -128,6 +136,9 @@ else()
     add_definitions(-DMU_APP_INSTALL_NAME="")
 
     add_definitions(-DMU_BUILD_UI_MODULE)
+
+    # modules config
+    add_definitions(-DMU_LANGUAGES_SERVER_URL="http://extensions.musescore.org/4.2/languages/")
 
 endif()
 

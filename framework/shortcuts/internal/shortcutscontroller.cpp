@@ -21,8 +21,6 @@
  */
 #include "shortcutscontroller.h"
 
-#include "context/shortcutcontext.h"
-
 #include "log.h"
 
 using namespace mu::shortcuts;
