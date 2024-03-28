@@ -135,7 +135,45 @@ else()
     add_definitions(-DMU_APP_INSTALL_PREFIX="")
     add_definitions(-DMU_APP_INSTALL_NAME="")
 
-    add_definitions(-DMU_BUILD_UI_MODULE)
+    if (MU_BUILD_ACCESSIBILITY_MODULE)
+        add_definitions(-DMU_BUILD_ACCESSIBILITY_MODULE)
+    endif()
+
+    if (MU_BUILD_ACTIONS_MODULE)
+        add_definitions(-DMU_BUILD_ACTIONS_MODULE)
+    endif()
+
+    if (MU_BUILD_EXTENSIONS_MODULE)
+        add_definitions(-DMU_BUILD_EXTENSIONS_MODULE)
+    endif()
+
+    if (MU_BUILD_LANGUAGES_MODULE)
+        add_definitions(-DMU_BUILD_LANGUAGES_MODULE)
+    endif()
+
+    if (MU_BUILD_MIDI_MODULE)
+        add_definitions(-DMU_BUILD_MIDI_MODULE)
+    endif()
+
+    if (MU_BUILD_MULTIINSTANCES_MODULE)
+        add_definitions(-DMU_BUILD_MULTIINSTANCES_MODULE)
+    endif()
+
+    if (MU_BUILD_NETWORK_MODULE)
+        add_definitions(-DMU_BUILD_NETWORK_MODULE)
+    endif()
+
+    if (MU_BUILD_SHORTCUTS_MODULE)
+        add_definitions(-DMU_BUILD_SHORTCUTS_MODULE)
+    endif()
+
+    if (MU_BUILD_UI_MODULE)
+        add_definitions(-DMU_BUILD_UI_MODULE)
+    endif()
+
+    if (MU_BUILD_WORKSPACE_MODULE)
+        add_definitions(-DMU_BUILD_WORKSPACE_MODULE)
+    endif()
 
     # modules config
     add_definitions(-DMU_LANGUAGES_SERVER_URL="http://extensions.musescore.org/4.2/languages/")

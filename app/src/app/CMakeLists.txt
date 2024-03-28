@@ -57,9 +57,45 @@ set(LINK_LIB
     muse::global
 )
 
+if (MU_BUILD_ACCESSIBILITY_MODULE)
+    list(APPEND LINK_LIB muse::accessibility)
+endif()
+
+if (MU_BUILD_ACTIONS_MODULE)
+    list(APPEND LINK_LIB muse::actions)
+endif()
+
+if (MU_BUILD_EXTENSIONS_MODULE)
+    list(APPEND LINK_LIB muse::extensions)
+endif()
+
+if (MU_BUILD_LANGUAGES_MODULE)
+    list(APPEND LINK_LIB muse::languages)
+endif()
+
+if (MU_BUILD_MIDI_MODULE)
+    list(APPEND LINK_LIB muse::midi)
+endif()
+
+if (MU_BUILD_MULTIINSTANCES_MODULE)
+    list(APPEND LINK_LIB muse::multiinstances)
+endif()
+
+if (MU_BUILD_NETWORK_MODULE)
+    list(APPEND LINK_LIB muse::network)
+endif()
+
+if (MU_BUILD_SHORTCUTS_MODULE)
+    list(APPEND LINK_LIB muse::shortcuts)
+endif()
+
 if (MU_BUILD_UI_MODULE)
     list(APPEND LINK_LIB muse::ui)
     list(APPEND LINK_LIB muse::uicomponents)
+endif()
+
+if (MU_BUILD_WORKSPACE_MODULE)
+    list(APPEND LINK_LIB muse::workspace)
 endif()
 
 # ...
