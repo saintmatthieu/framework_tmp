@@ -42,9 +42,9 @@
 
 #include "log.h"
 
-using namespace mu;
-using namespace mu::languages;
-using namespace mu::network;
+using namespace muse;
+using namespace muse::languages;
+using namespace muse::network;
 
 static const QStringList LANGUAGE_RESOURCE_NAMES = {
     "musescore",
@@ -204,13 +204,12 @@ void LanguagesService::setCurrentLanguage(const QString& languageCode)
     m_currentLanguageChanged.notify();
 }
 
-QString LanguagesService::effectiveLanguageCode(const QString& languageCode) const
+QString LanguagesService::effectiveLanguageCode(QString languageCode) const
 {
+    languageCode.replace('-', '_');
     // Tries decreasingly specific versions of `code`. For example:
     // "nl_NL" -> not found -> try just "nl" -> found -> returns "nl".
     auto tryCode = [this](QString code) -> QString {
-        code.replace('-', '_');
-
         for (;;) {
             if (m_languagesHash.contains(code)) {
                 return code;
@@ -246,7 +245,15 @@ QString LanguagesService::effectiveLanguageCode(const QString& languageCode) con
 
     if (languageCode.isEmpty() || languageCode == SYSTEM_LANGUAGE_CODE) {
         for (const QString& code : QLocale::system().uiLanguages()) {
-            QString effectiveCode = tryCode(code);
+            LOGI() << "System language code: " << code;
+            QString effectiveCode = code;
+            effectiveCode.replace('-', '_');
+            // Prefer Swedish (Modern) over Swedish (Traditional)
+            // when using system language.
+            if (effectiveCode == "sv_SE") {
+                effectiveCode = "sv";
+            }
+            effectiveCode = tryCode(effectiveCode);
             if (!effectiveCode.isEmpty()) {
                 return effectiveCode;
             }
@@ -301,7 +308,7 @@ Ret LanguagesService::loadLanguage(Language& lang)
         return true;
     }());
 
-    return make_ok();
+    return muse::make_ok();
 }
 
 Progress LanguagesService::update(const QString& languageCode)
@@ -352,7 +359,7 @@ void LanguagesService::th_update(const QString& languageCode, Progress progress)
 {
     progress.started.notify();
 
-    progress.progressChanged.send(0, 0, trc("languages", "Checking for updates…"));
+    progress.progressChanged.send(0, 0, muse::trc("languages", "Checking for updates…"));
 
     if (!canUpdate(languageCode)) {
         progress.finished.send(make_ret(Err::AlreadyUpToDate));
@@ -406,7 +413,7 @@ bool LanguagesService::canUpdate(const QString& languageCode)
 
 Ret LanguagesService::downloadLanguage(const QString& languageCode, Progress progress) const
 {
-    std::string downloadingStatusTitle = trc("languages", "Downloading…");
+    std::string downloadingStatusTitle = muse::trc("languages", "Downloading…");
     progress.progressChanged.send(0, 0, downloadingStatusTitle);
 
     QBuffer qbuff;
@@ -423,7 +430,7 @@ Ret LanguagesService::downloadLanguage(const QString& languageCode, Progress pro
         return make_ret(Err::ErrorDownloadLanguage);
     }
 
-    progress.progressChanged.send(0, 0, trc("languages", "Unpacking…"));
+    progress.progressChanged.send(0, 0, muse::trc("languages", "Unpacking…"));
 
     ByteArray ba = ByteArray::fromQByteArrayNoCopy(qbuff.data());
     io::Buffer buff(&ba);
@@ -442,7 +449,7 @@ Ret LanguagesService::downloadLanguage(const QString& languageCode, Progress pro
         }
     }
 
-    return make_ok();
+    return muse::make_ok();
 }
 
 RetVal<QString> LanguagesService::fileHash(const io::path_t& path)

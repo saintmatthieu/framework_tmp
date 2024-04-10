@@ -19,15 +19,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_UI_QMLLAUNCHER_H
-#define MU_UI_QMLLAUNCHER_H
+#ifndef MUSE_UI_QMLLAUNCHER_H
+#define MUSE_UI_QMLLAUNCHER_H
 
 #include <QObject>
 
 #include "modularity/ioc.h"
 #include "iinteractive.h"
 
-namespace mu::ui {
+namespace muse::ui {
 class QmlLauncher : public QObject
 {
     Q_OBJECT
@@ -42,4 +42,4 @@ public:
 };
 }
 
-#endif // MU_UI_QMLLAUNCHER_H
+#endif // MUSE_UI_QMLLAUNCHER_H

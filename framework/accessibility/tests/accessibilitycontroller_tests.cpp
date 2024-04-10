@@ -35,8 +35,8 @@ using ::testing::_;
 using ::testing::SaveArg;
 using ::testing::DoAll;
 
-using namespace mu;
-using namespace mu::accessibility;
+using namespace muse;
+using namespace muse::accessibility;
 
 class Accessibility_ControllerTests : public ::testing::Test
 {
@@ -46,7 +46,7 @@ public:
     {
         m_controller = std::make_shared<AccessibilityController>();
 
-        m_mainWindow = std::make_shared<ui::MainWindowMock>();
+        m_mainWindow = std::make_shared<muse::ui::MainWindowMock>();
         m_controller->mainWindow.set(m_mainWindow);
 
         m_application = std::make_shared<ApplicationMock>();
@@ -56,7 +56,7 @@ public:
         m_controller->configuration.set(m_configuration);
     }
 
-    class AccessibleItem : public accessibility::IAccessible
+    class AccessibleItem : public IAccessible
     {
     public:
         void setParent(AccessibleItem* parent) { m_parent = parent; }
@@ -151,7 +151,7 @@ public:
 #endif
 
     std::shared_ptr<AccessibilityController> m_controller;
-    std::shared_ptr<ui::MainWindowMock> m_mainWindow;
+    std::shared_ptr<muse::ui::MainWindowMock> m_mainWindow;
     std::shared_ptr<AccessibilityConfigurationMock> m_configuration;
     std::shared_ptr<ApplicationMock> m_application;
 };

@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_EXTENSIONS_API_EXTAPI_H
-#define MU_EXTENSIONS_API_EXTAPI_H
+#ifndef MUSE_EXTENSIONS_API_EXTAPI_H
+#define MUSE_EXTENSIONS_API_EXTAPI_H
 
 #include <QObject>
 #include <QMap>
@@ -29,7 +29,7 @@
 #include "api/iapiregister.h"
 #include "api/iapiengine.h"
 
-namespace mu::extensions::api {
+namespace muse::extensions::api {
 //! NOTE Used for qml and scripts
 class ExtApi : public QObject
 {
@@ -52,10 +52,10 @@ class ExtApi : public QObject
     //Q_PROPERTY(QJSValue process READ process CONSTANT)
     //Q_PROPERTY(QJSValue filesystem READ filesystem CONSTANT)
 
-    Inject<mu::api::IApiRegister> apiRegister;
+    Inject<muse::api::IApiRegister> apiRegister;
 
 public:
-    ExtApi(mu::api::IApiEngine* engine, QObject* parent);
+    ExtApi(muse::api::IApiEngine* engine, QObject* parent);
 
     QJSValue log() const { return api("api.log"); }
     QJSValue context() const { return api("api.context"); }
@@ -73,13 +73,13 @@ private:
 
     struct Api
     {
-        mu::api::ApiObject* obj = nullptr;
+        muse::api::ApiObject* obj = nullptr;
         QJSValue jsval;
     };
 
-    mu::api::IApiEngine* m_engine = nullptr;
+    muse::api::IApiEngine* m_engine = nullptr;
     mutable QMap<std::string, Api> m_apis;
 };
 }
 
-#endif // MU_EXTENSIONS_API_EXTAPI_H
+#endif // MUSE_EXTENSIONS_API_EXTAPI_H

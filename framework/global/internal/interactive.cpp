@@ -39,6 +39,7 @@
 #elif defined(Q_OS_WIN)
 #include <QDir>
 #include <QProcess>
+#include "platform/win/wininteractivehelper.h"
 #endif
 
 #include "translation.h"
@@ -46,7 +47,7 @@
 
 #include "log.h"
 
-using namespace mu;
+using namespace muse;
 
 static IInteractive::Result standardDialogResult(const RetVal<Val>& retVal)
 {
@@ -94,25 +95,25 @@ IInteractive::ButtonData Interactive::buttonData(Button b) const
 
     switch (b) {
     case IInteractive::Button::NoButton:    return ButtonData(int(b), "");
-    case IInteractive::Button::Ok:          return ButtonData(int(b), trc("global", "OK"), accent);
-    case IInteractive::Button::Save:        return ButtonData(int(b), trc("global", "Save"), accent);
-    case IInteractive::Button::SaveAll:     return ButtonData(int(b), trc("global", "Save all"));
-    case IInteractive::Button::DontSave:    return ButtonData(int(b), trc("global", "Don’t save"));
-    case IInteractive::Button::Open:        return ButtonData(int(b), trc("global", "Open"));
-    case IInteractive::Button::Yes:         return ButtonData(int(b), trc("global", "Yes"), accent);
-    case IInteractive::Button::YesToAll:    return ButtonData(int(b), trc("global", "Yes to all"), accent);
-    case IInteractive::Button::No:          return ButtonData(int(b), trc("global", "No"));
-    case IInteractive::Button::NoToAll:     return ButtonData(int(b), trc("global", "No to all"));
-    case IInteractive::Button::Abort:       return ButtonData(int(b), trc("global", "Abort"));
-    case IInteractive::Button::Retry:       return ButtonData(int(b), trc("global", "Retry"));
-    case IInteractive::Button::Ignore:      return ButtonData(int(b), trc("global", "Ignore"));
-    case IInteractive::Button::Close:       return ButtonData(int(b), trc("global", "Close"));
-    case IInteractive::Button::Cancel:      return ButtonData(int(b), trc("global", "Cancel"));
-    case IInteractive::Button::Discard:     return ButtonData(int(b), trc("global", "Discard"));
-    case IInteractive::Button::Help:        return ButtonData(int(b), trc("global", "Help"));
-    case IInteractive::Button::Apply:       return ButtonData(int(b), trc("global", "Apply"));
-    case IInteractive::Button::Reset:       return ButtonData(int(b), trc("global", "Reset"));
-    case IInteractive::Button::Continue:    return ButtonData(int(b), trc("global", "Continue"));
+    case IInteractive::Button::Ok:          return ButtonData(int(b), muse::trc("global", "OK"), accent);
+    case IInteractive::Button::Save:        return ButtonData(int(b), muse::trc("global", "Save"), accent);
+    case IInteractive::Button::SaveAll:     return ButtonData(int(b), muse::trc("global", "Save all"));
+    case IInteractive::Button::DontSave:    return ButtonData(int(b), muse::trc("global", "Don’t save"));
+    case IInteractive::Button::Open:        return ButtonData(int(b), muse::trc("global", "Open"));
+    case IInteractive::Button::Yes:         return ButtonData(int(b), muse::trc("global", "Yes"), accent);
+    case IInteractive::Button::YesToAll:    return ButtonData(int(b), muse::trc("global", "Yes to all"), accent);
+    case IInteractive::Button::No:          return ButtonData(int(b), muse::trc("global", "No"));
+    case IInteractive::Button::NoToAll:     return ButtonData(int(b), muse::trc("global", "No to all"));
+    case IInteractive::Button::Abort:       return ButtonData(int(b), muse::trc("global", "Abort"));
+    case IInteractive::Button::Retry:       return ButtonData(int(b), muse::trc("global", "Retry"));
+    case IInteractive::Button::Ignore:      return ButtonData(int(b), muse::trc("global", "Ignore"));
+    case IInteractive::Button::Close:       return ButtonData(int(b), muse::trc("global", "Close"));
+    case IInteractive::Button::Cancel:      return ButtonData(int(b), muse::trc("global", "Cancel"));
+    case IInteractive::Button::Discard:     return ButtonData(int(b), muse::trc("global", "Discard"));
+    case IInteractive::Button::Help:        return ButtonData(int(b), muse::trc("global", "Help"));
+    case IInteractive::Button::Apply:       return ButtonData(int(b), muse::trc("global", "Apply"));
+    case IInteractive::Button::Reset:       return ButtonData(int(b), muse::trc("global", "Reset"));
+    case IInteractive::Button::Continue:    return ButtonData(int(b), muse::trc("global", "Continue"));
     case IInteractive::Button::Next:
     case IInteractive::Button::Back:
     case IInteractive::Button::Select:
@@ -179,12 +180,12 @@ IInteractive::Result Interactive::error(const std::string& title, const Text& te
     return standardDialogResult(provider()->error(title, text, detailedText, buttons, defBtn, options));
 }
 
-Ret Interactive::showProgress(const std::string& title, mu::Progress* progress) const
+Ret Interactive::showProgress(const std::string& title, Progress* progress) const
 {
     return provider()->showProgress(title, progress);
 }
 
-mu::io::path_t Interactive::selectOpeningFile(const QString& title, const io::path_t& dir, const std::vector<std::string>& filter)
+io::path_t Interactive::selectOpeningFile(const QString& title, const io::path_t& dir, const std::vector<std::string>& filter)
 {
 #ifndef Q_OS_LINUX
     QString result = QFileDialog::getOpenFileName(nullptr, title, dir.toQString(), filterToString(filter));
@@ -226,7 +227,7 @@ io::paths_t Interactive::selectMultipleDirectories(const QString& title, const i
         "startDir=" + dir.toQString()
     };
 
-    RetVal<Val> result = open("musescore://interactive/selectMultipleDirectories?" + params.join("&").toStdString());
+    RetVal<Val> result = open("muse://interactive/selectmultipledirectories?" + params.join("&").toStdString());
     if (!result.ret) {
         return selectedDirectories;
     }
@@ -323,6 +324,21 @@ Ret Interactive::openUrl(const std::string& url) const
 Ret Interactive::openUrl(const QUrl& url) const
 {
     return QDesktopServices::openUrl(url);
+}
+
+async::Promise<Ret> Interactive::openApp(const std::string& appIdentifier) const
+{
+#ifdef Q_OS_MACOS
+    return MacOSInteractiveHelper::openApp(appIdentifier);
+#elif defined(Q_OS_WIN)
+    return WinInteractiveHelper::openApp(appIdentifier);
+#else
+    UNUSED(appIdentifier);
+    return async::Promise<Ret>([](auto, auto reject) {
+        Ret ret = make_ret(Ret::Code::NotImplemented);
+        return reject(ret.code(), ret.text());
+    });
+#endif
 }
 
 Ret Interactive::revealInFileBrowser(const io::path_t& filePath) const

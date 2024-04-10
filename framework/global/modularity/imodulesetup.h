@@ -27,7 +27,7 @@
 
 #include "../iapplication.h"
 
-namespace mu::modularity {
+namespace muse::modularity {
 class IModuleSetup
 {
 public:

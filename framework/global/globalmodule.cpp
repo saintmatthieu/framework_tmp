@@ -21,6 +21,8 @@
  */
 #include "globalmodule.h"
 
+#include "muse_framework_config.h"
+
 #include "modularity/ioc.h"
 #include "internal/globalconfiguration.h"
 
@@ -34,7 +36,7 @@
 #include "internal/process.h"
 #include "internal/systeminfo.h"
 
-#ifdef MU_BUILD_UI_MODULE
+#ifdef MUSE_MODULE_UI
 #include "internal/interactive.h"
 #endif
 
@@ -52,13 +54,15 @@
 #include "api/filesystemapi.h"
 #include "api/processapi.h"
 
-//#include "diagnostics/idiagnosticspathsregister.h"
+#ifdef MUSE_MODULE_DIAGNOSTICS
+#include "diagnostics/idiagnosticspathsregister.h"
+#endif
 
 #include "log.h"
 
-using namespace mu;
-using namespace mu::modularity;
-using namespace mu::io;
+using namespace muse;
+using namespace muse::modularity;
+using namespace muse::io;
 
 std::shared_ptr<Invoker> GlobalModule::s_asyncInvoker = {};
 
@@ -86,14 +90,14 @@ void GlobalModule::registerExports()
     ioc()->registerExport<IProcess>(moduleName(), new Process());
     ioc()->registerExport<api::IApiRegister>(moduleName(), new api::ApiRegister());
 
-#ifdef MU_BUILD_UI_MODULE
+#ifdef MUSE_MODULE_UI
     ioc()->registerExport<IInteractive>(moduleName(), new Interactive());
 #endif
 }
 
 void GlobalModule::registerApi()
 {
-    using namespace mu::api;
+    using namespace muse::api;
 
     auto api = ioc()->resolve<IApiRegister>(moduleName());
     if (api) {
@@ -106,20 +110,20 @@ void GlobalModule::registerApi()
 
 void GlobalModule::onPreInit(const IApplication::RunMode& mode)
 {
-    mu::runtime::mainThreadId(); //! NOTE Needs only call
-    mu::runtime::setThreadName("main");
+    muse::runtime::mainThreadId(); //! NOTE Needs only call
+    muse::runtime::setThreadName("main");
 
     //! NOTE: settings must be inited before initialization of any module
     //! because modules can use settings at the moment of their initialization
     settings()->load();
 
     //! --- Setup logger ---
-    using namespace mu::logger;
+    using namespace muse::logger;
     Logger* logger = Logger::instance();
     logger->clearDests();
 
     //! Console
-    if (mode == IApplication::RunMode::GuiApp || mu::runtime::isDebug()) {
+    if (mode == IApplication::RunMode::GuiApp || muse::runtime::isDebug()) {
         logger->addDest(new ConsoleLogDest(LogLayout("${time} | ${type|5} | ${thread|15} | ${tag|15} | ${message}")));
     }
 
@@ -156,10 +160,10 @@ void GlobalModule::onPreInit(const IApplication::RunMode& mode)
     if (m_loggerLevel) {
         logger->setLevel(m_loggerLevel.value());
     } else {
-#ifdef MUE_ENABLE_LOGGER_DEBUGLEVEL
-        logger->setLevel(mu::logger::Level::Debug);
+#ifdef MUSE_MODULE_GLOBAL_LOGGER_DEBUGLEVEL
+        logger->setLevel(muse::logger::Level::Debug);
 #else
-        logger->setLevel(mu::logger::Level::Normal);
+        logger->setLevel(muse::logger::Level::Normal);
 #endif
     }
 
@@ -169,7 +173,7 @@ void GlobalModule::onPreInit(const IApplication::RunMode& mode)
            << ", build: " << m_application->build() << " ===";
 
     //! --- Setup profiler ---
-    using namespace mu::profiler;
+    using namespace muse::profiler;
     struct MyPrinter : public Profiler::Printer
     {
         void printDebug(const std::string& str) override { LOG_STREAM(Logger::DEBG, "Profiler", Color::Magenta)() << str; }
@@ -190,23 +194,25 @@ void GlobalModule::onPreInit(const IApplication::RunMode& mode)
 
     Invoker::setup();
 
-    mu::async::onMainThreadInvoke([](const std::function<void()>& f, bool isAlwaysQueued) {
+    async::onMainThreadInvoke([](const std::function<void()>& f, bool isAlwaysQueued) {
         s_asyncInvoker->invoke(f, isAlwaysQueued);
     });
 
     //! --- Diagnostics ---
-    // auto pr = ioc()->resolve<diagnostics::IDiagnosticsPathsRegister>(moduleName());
-    // if (pr) {
-    //     pr->reg("appBinPath", m_configuration->appBinPath());
-    //     pr->reg("appBinDirPath", m_configuration->appBinDirPath());
-    //     pr->reg("appDataPath", m_configuration->appDataPath());
-    //     pr->reg("appConfigPath", m_configuration->appConfigPath());
-    //     pr->reg("userAppDataPath", m_configuration->userAppDataPath());
-    //     pr->reg("userBackupPath", m_configuration->userBackupPath());
-    //     pr->reg("userDataPath", m_configuration->userDataPath());
-    //     pr->reg("log file", logFilePath);
-    //     pr->reg("settings file", settings()->filePath());
-    // }
+#ifdef MUSE_MODULE_DIAGNOSTICS
+    auto pr = ioc()->resolve<muse::diagnostics::IDiagnosticsPathsRegister>(moduleName());
+    if (pr) {
+        pr->reg("appBinPath", m_configuration->appBinPath());
+        pr->reg("appBinDirPath", m_configuration->appBinDirPath());
+        pr->reg("appDataPath", m_configuration->appDataPath());
+        pr->reg("appConfigPath", m_configuration->appConfigPath());
+        pr->reg("userAppDataPath", m_configuration->userAppDataPath());
+        pr->reg("userBackupPath", m_configuration->userBackupPath());
+        pr->reg("userDataPath", m_configuration->userDataPath());
+        pr->reg("log file", logFilePath);
+        pr->reg("settings file", settings()->filePath());
+    }
+#endif
 }
 
 void GlobalModule::onInit(const IApplication::RunMode&)
@@ -225,7 +231,7 @@ void GlobalModule::invokeQueuedCalls()
     s_asyncInvoker->invokeQueuedCalls();
 }
 
-void GlobalModule::setLoggerLevel(const mu::logger::Level& level)
+void GlobalModule::setLoggerLevel(const muse::logger::Level& level)
 {
     m_loggerLevel = level;
 }

@@ -20,13 +20,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MU_UI_UIMODULE_H
-#define MU_UI_UIMODULE_H
+#ifndef MUSE_UI_UIMODULE_H
+#define MUSE_UI_UIMODULE_H
 
 #include "modularity/imodulesetup.h"
 #include <QtGlobal>
 
-namespace mu::ui {
+namespace muse::ui {
+class UiEngine;
 class UiConfiguration;
 class UiActionsRegister;
 class NavigationController;
@@ -58,6 +59,7 @@ public:
     void onDeinit() override;
 
 private:
+    std::shared_ptr<UiEngine> m_uiengine;
     std::shared_ptr<UiConfiguration> m_configuration;
     std::shared_ptr<UiActionsRegister> m_uiactionsRegister;
     std::shared_ptr<NavigationController> m_keyNavigationController;
@@ -75,4 +77,4 @@ private:
 };
 }
 
-#endif // MU_UI_UIMODULE_H
+#endif // MUSE_UI_UIMODULE_H

@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_GLOBAL_SETTINGS_H
-#define MU_GLOBAL_SETTINGS_H
+#ifndef MUSE_GLOBAL_SETTINGS_H
+#define MUSE_GLOBAL_SETTINGS_H
 
 #include <string>
 
@@ -28,7 +28,8 @@
 #include "async/channel.h"
 #include "io/path.h"
 
-#ifdef MU_BUILD_MULTIINSTANCES_MODULE
+#include "muse_framework_config.h"
+#ifdef MUSE_MODULE_MULTIINSTANCES
 #include "modularity/ioc.h"
 #include "multiinstances/imultiinstancesprovider.h"
 #endif
@@ -40,11 +41,11 @@
 
 class QSettings;
 
-namespace mu {
+namespace muse {
 class Settings
 {
-#ifdef MU_BUILD_MULTIINSTANCES_MODULE
-    Inject<mi::IMultiInstancesProvider> multiInstancesProvider;
+#ifdef MUSE_MODULE_MULTIINSTANCES
+    Inject<muse::mi::IMultiInstancesProvider> multiInstancesProvider;
 #endif
 public:
     static Settings* instance();
@@ -138,4 +139,4 @@ inline Settings* settings()
 }
 }
 
-#endif // MU_GLOBAL_SETTINGS_H
+#endif // MUSE_GLOBAL_SETTINGS_H

@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_WORKSPACE_WORKSPACEACTIONCONTROLLER_H
-#define MU_WORKSPACE_WORKSPACEACTIONCONTROLLER_H
+#ifndef MUSE_WORKSPACE_WORKSPACEACTIONCONTROLLER_H
+#define MUSE_WORKSPACE_WORKSPACEACTIONCONTROLLER_H
 
 #include "modularity/ioc.h"
 #include "actions/iactionsdispatcher.h"
@@ -28,22 +28,22 @@
 #include "iworkspaceconfiguration.h"
 #include "iinteractive.h"
 
-namespace mu::workspace {
-class WorkspaceActionController : public actions::Actionable
+namespace muse::workspace {
+class WorkspaceActionController : public muse::actions::Actionable
 {
     INJECT(actions::IActionsDispatcher, dispatcher)
-    INJECT(IWorkspaceConfiguration, configuration)
     INJECT(IInteractive, interactive)
+    INJECT(IWorkspaceConfiguration, configuration)
 
 public:
     void init();
 
 private:
-    void selectWorkspace(const actions::ActionData& args);
+    void selectWorkspace(const muse::actions::ActionData& args);
     void openConfigureWorkspacesDialog();
 
     void setCurrentWorkspaceName(const std::string& workspaceName);
 };
 }
 
-#endif // MU_WORKSPACE_WORKSPACEACTIONCONTROLLER_H
+#endif // MUSE_WORKSPACE_WORKSPACEACTIONCONTROLLER_H

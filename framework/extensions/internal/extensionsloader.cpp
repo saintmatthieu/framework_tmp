@@ -30,10 +30,11 @@
 
 #include "log.h"
 
+using namespace muse;
+using namespace muse::extensions;
+
 const std::string MANIFEST("manifest.json");
 const std::string DEV_EXTENSIONS("extensions/dev/");
-
-using namespace mu::extensions;
 
 ManifestList ExtensionsLoader::loadManifesList(const io::path_t& defPath, const io::path_t& extPath) const
 {
@@ -50,7 +51,7 @@ ManifestList ExtensionsLoader::loadManifesList(const io::path_t& defPath, const 
             continue;
         }
 
-        if (!mu::runtime::isDebug() && mu::strings::startsWith(m.uri.path(), DEV_EXTENSIONS)) {
+        if (!runtime::isDebug() && muse::strings::startsWith(m.uri.path(), DEV_EXTENSIONS)) {
             continue;
         }
 
@@ -62,7 +63,7 @@ ManifestList ExtensionsLoader::loadManifesList(const io::path_t& defPath, const 
             continue;
         }
 
-        if (!mu::runtime::isDebug() && mu::strings::startsWith(m.uri.path(), DEV_EXTENSIONS)) {
+        if (!runtime::isDebug() && muse::strings::startsWith(m.uri.path(), DEV_EXTENSIONS)) {
             continue;
         }
 
@@ -85,7 +86,7 @@ ManifestList ExtensionsLoader::manifesList(const io::path_t& rootPath) const
     return manifests;
 }
 
-mu::io::paths_t ExtensionsLoader::manifestPaths(const io::path_t& rootPath) const
+io::paths_t ExtensionsLoader::manifestPaths(const io::path_t& rootPath) const
 {
     RetVal<io::paths_t> paths = io::Dir::scanFiles(rootPath, { MANIFEST });
     if (!paths.ret) {
@@ -126,6 +127,7 @@ Manifest ExtensionsLoader::parseManifest(const io::path_t& path) const
             Action a;
             a.code = ao.value("code").toStdString();
             a.type = typeFromString(ao.value("type").toStdString());
+            a.modal = ao.value("modal", DEFAULT_MODAL).toBool();
             a.title = ao.value("title").toString();
             a.main = ao.value("main").toStdString();
             a.apiversion = m.apiversion;
@@ -135,6 +137,7 @@ Manifest ExtensionsLoader::parseManifest(const io::path_t& path) const
         Action a;
         a.code = "main";
         a.type = m.type;
+        a.modal = obj.value("modal", DEFAULT_MODAL).toBool();
         a.title = m.title;
         a.main = obj.value("main").toStdString();
         a.apiversion = m.apiversion;

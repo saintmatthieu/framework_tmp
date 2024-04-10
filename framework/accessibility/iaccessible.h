@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_ACCESSIBILITY_IACCESSIBLE_H
-#define MU_ACCESSIBILITY_IACCESSIBLE_H
+#ifndef MUSE_ACCESSIBILITY_IACCESSIBLE_H
+#define MUSE_ACCESSIBILITY_IACCESSIBLE_H
 
 #include <QString>
 #include <QRect>
@@ -32,7 +32,7 @@
 
 class QWindow;
 
-namespace mu::accessibility {
+namespace muse::accessibility {
 class IAccessible
 {
 public:
@@ -157,4 +157,4 @@ public:
 };
 }
 
-#endif // MU_ACCESSIBILITY_IACCESSIBLE_H
+#endif // MUSE_ACCESSIBILITY_IACCESSIBLE_H

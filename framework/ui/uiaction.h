@@ -1,12 +1,14 @@
-#ifndef MU_UI_UIACTION_H
-#define MU_UI_UIACTION_H
+#ifndef MUSE_UI_UIACTION_H
+#define MUSE_UI_UIACTION_H
+
+#include <optional>
 
 #include "actions/actiontypes.h"
 #include "global/types/mnemonicstring.h"
 
 #include "view/iconcodes.h"
 
-namespace mu::ui {
+namespace muse::ui {
 struct UiContext
 {
     UiContext() = default;
@@ -185,4 +187,4 @@ struct ToolConfig
 };
 }
 
-#endif // MU_UI_UIACTION_H
+#endif // MUSE_UI_UIACTION_H

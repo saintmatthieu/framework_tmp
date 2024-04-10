@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H
-#define MU_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H
+#ifndef MUSE_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H
+#define MUSE_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H
 
 #include <QAccessibleInterface>
 
@@ -29,7 +29,7 @@
 #include "modularity/ioc.h"
 #include "ui/iinteractiveprovider.h"
 
-namespace mu::accessibility {
+namespace muse::accessibility {
 class AccessibleItemInterface : public QAccessibleInterface, public QAccessibleValueInterface, public QAccessibleTextInterface,
     public QAccessibleTableCellInterface
 {
@@ -108,4 +108,4 @@ private:
 };
 }
 
-#endif // MU_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H
+#endif // MUSE_ACCESSIBILITY_ACCESSIBLEITEMINTERFACE_H

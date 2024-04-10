@@ -37,13 +37,15 @@
 
 #include "log.h"
 
-#ifdef MUE_ENABLE_ACCESSIBILITY_TRACE
+#ifdef MUSE_MODULE_ACCESSIBILITY_TRACE
 #define MYLOG() LOGI()
 #else
 #define MYLOG() LOGN()
 #endif
 
-using namespace mu::accessibility;
+using namespace muse;
+using namespace muse::modularity;
+using namespace muse::accessibility;
 
 AccessibleObject* s_rootObject = nullptr;
 std::shared_ptr<IQAccessibleInterfaceRegister> accessibleInterfaceRegister = nullptr;
@@ -65,7 +67,7 @@ QAccessibleInterface* AccessibilityController::accessibleInterface(QObject*)
 static QAccessibleInterface* muAccessibleFactory(const QString& classname, QObject* object)
 {
     if (!accessibleInterfaceRegister) {
-        accessibleInterfaceRegister = mu::modularity::ioc()->resolve<IQAccessibleInterfaceRegister>("accessibility");
+        accessibleInterfaceRegister = ioc()->resolve<IQAccessibleInterfaceRegister>("accessibility");
     }
 
     auto interfaceGetter = accessibleInterfaceRegister->interfaceGetter(classname);
@@ -295,7 +297,7 @@ void AccessibilityController::stateChanged(IAccessible* aitem, State state, bool
 
 void AccessibilityController::sendEvent(QAccessibleEvent* ev)
 {
-#ifdef MUE_ENABLE_ACCESSIBILITY_TRACE
+#ifdef MUSE_MODULE_ACCESSIBILITY_TRACE
     AccessibleObject* obj = qobject_cast<AccessibleObject*>(ev->object());
     MYLOG() << "object: " << obj->item()->accessibleName() << ", event: " << int(ev->type());
 #endif
@@ -425,7 +427,7 @@ IAccessible* AccessibilityController::findSiblingItem(const IAccessible* item, c
     return nullptr;
 }
 
-mu::async::Channel<QAccessibleEvent*> AccessibilityController::eventSent() const
+async::Channel<QAccessibleEvent*> AccessibilityController::eventSent() const
 {
     return m_eventSent;
 }
@@ -668,13 +670,13 @@ int AccessibilityController::accessibleRowIndex() const
     return 0;
 }
 
-mu::async::Channel<IAccessible::Property, mu::Val> AccessibilityController::accessiblePropertyChanged() const
+async::Channel<IAccessible::Property, Val> AccessibilityController::accessiblePropertyChanged() const
 {
     static async::Channel<IAccessible::Property, Val> ch;
     return ch;
 }
 
-mu::async::Channel<IAccessible::State, bool> AccessibilityController::accessibleStateChanged() const
+async::Channel<IAccessible::State, bool> AccessibilityController::accessibleStateChanged() const
 {
     static async::Channel<IAccessible::State, bool> ch;
     return ch;

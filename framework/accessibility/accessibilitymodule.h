@@ -20,14 +20,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MU_ACCESSIBILITY_ACCESSIBILITYMODULE_H
-#define MU_ACCESSIBILITY_ACCESSIBILITYMODULE_H
+#ifndef MUSE_ACCESSIBILITY_ACCESSIBILITYMODULE_H
+#define MUSE_ACCESSIBILITY_ACCESSIBILITYMODULE_H
 
 #include <memory>
 
 #include "modularity/imodulesetup.h"
 
-namespace mu::accessibility {
+namespace muse::accessibility {
 class AccessibilityConfiguration;
 class AccessibilityModule : public modularity::IModuleSetup
 {
@@ -45,4 +45,4 @@ private:
 };
 }
 
-#endif // MU_ACCESSIBILITY_ACCESSIBILITYMODULE_H
+#endif // MUSE_ACCESSIBILITY_ACCESSIBILITYMODULE_H

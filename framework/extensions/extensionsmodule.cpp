@@ -41,8 +41,8 @@
 
 #include "log.h"
 
-using namespace mu::extensions;
-using namespace mu::modularity;
+using namespace muse::extensions;
+using namespace muse::modularity;
 
 static void extensions_init_qrc()
 {
@@ -81,7 +81,7 @@ void ExtensionsModule::resolveImports()
 {
     auto ir = ioc()->resolve<ui::IInteractiveUriRegister>(moduleName());
     if (ir) {
-        ir->registerQmlUri(Uri("musescore://extensions/viewer"), "Muse/Extensions/ExtensionViewerDialog.qml");
+        ir->registerQmlUri(Uri("muse://extensions/viewer"), "Muse/Extensions/ExtensionViewerDialog.qml");
     }
 }
 

@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(USE_LOCAL_MUSE_FRAMEWORK OFF)
+set(USE_LOCAL_MUSE_FRAMEWORK ON)
 
 if (NOT USE_LOCAL_MUSE_FRAMEWORK)
     set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/_deps)
@@ -37,7 +37,10 @@ else()
 
 endif()
 
+message("muse_framework_SOURCE_DIR: ${muse_framework_SOURCE_DIR}")
+
 set(MUSE_FRAMEWORK_PATH ${muse_framework_SOURCE_DIR})
+set(MUSE_FRAMEWORK_SRC_PATH ${muse_framework_SOURCE_DIR}/framework)
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}
@@ -64,27 +67,10 @@ set(APP_BUILD_MODE "dev" CACHE STRING "Build mode")
 
 set(APP_REVISION "" CACHE STRING "Build revision")
 
-# Modules framework (alphabetical order please)
-option(MU_BUILD_ACCESSIBILITY_MODULE "Build accessibility module" ON)
-option(MU_BUILD_ACCESSIBILITY_TESTS "Build accessibility tests" OFF)
-option(MU_BUILD_ACTIONS_MODULE "Build actions module" ON)
-option(MU_BUILD_ACTIONS_TESTS "Build actions tests" OFF)
-option(MU_BUILD_EXTENSIONS_MODULE "Build extensions module" ON)
-option(MU_BUILD_EXTENSIONS_TESTS "Build extensions tests" OFF)
-option(MU_BUILD_LANGUAGES_MODULE "Build languages module" ON)
-option(MU_BUILD_LANGUAGES_TESTS "Build languages tests" OFF)
-option(MU_BUILD_MIDI_MODULE "Build midi module" ON)
-option(MU_BUILD_MIDI_TESTS "Build midi tests" OFF)
-option(MU_BUILD_MULTIINSTANCES_MODULE "Build multiinstances module" ON)
-option(MU_BUILD_MULTIINSTANCES_TESTS "Build multiinstances tests" OFF)
-option(MU_BUILD_NETWORK_MODULE "Build network module" ON)
-option(MU_BUILD_NETWORK_TESTS "Build network tests" OFF)
-option(MU_BUILD_SHORTCUTS_MODULE "Build shortcuts module" ON)
-option(MU_BUILD_SHORTCUTS_TESTS "Build shortcuts tests" OFF)
-option(MU_BUILD_UI_MODULE "Build ui and uicomponets modules" ON)
-option(MU_BUILD_UI_TESTS "Build ui and uicomponets tests" OFF)
-option(MU_BUILD_WORKSPACE_MODULE "Build workspace module" ON)
-option(MU_BUILD_WORKSPACE_TESTS "Build workspace tests" OFF)
+include(muse_framework/DeclareOptions)
+
+set(MUSE_MODULE_AUTOBOT OFF)
+set(MUSE_MODULE_DRAW OFF)
 
 # Modules (alphabetical order please)
 option(MU_BUILD_APPSHELL_MODULE "Build appshell module" OFF)
@@ -97,7 +83,6 @@ option(MU_RUN_LRELEASE "Generate .qm files" ON)
 # === Tests ===
 option(MU_BUILD_UNIT_TESTS "Build unit tests" OFF)
 option(MU_BUILD_ASAN "Enable Address Sanitizer" OFF)
-option(MU_BUILD_CRASHPAD_CLIENT "Build crashpad client" OFF)
 set(MU_CRASH_REPORT_URL "" CACHE STRING "URL where to send crash reports")
 option(MU_CRASHPAD_HANDLER_PATH "Path to custom crashpad_handler executable (optional)" "")
 
@@ -111,76 +96,15 @@ option(MU_COMPILE_USE_UNITY "Use unity build." ON)
 option(MU_COMPILE_USE_CCACHE "Try use ccache" ON)
 
 # === Debug ===
-option(MU_ENABLE_LOGGER_DEBUGLEVEL "Enable logging debug level" ON)
-option(MU_ENABLE_ACCESSIBILITY_TRACE "Enable accessibility logging" OFF)
-option(MU_DISABLE_UI_MODALITY "Disable dialogs modality for testing purpose" OFF)
 option(MU_ENABLE_STRING_DEBUG_HACK "Enable string debug hack (only clang)" ON)
 
 
 ###########################################
 # Setup Configure
 ###########################################
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SetupConfigure.local.cmake")
-    include(${CMAKE_CURRENT_LIST_DIR}/SetupConfigure.local.cmake)
-else()
-    #include(SetupConfigure)
-    add_definitions(-DQT_SUPPORT)
-    add_definitions(-DKORS_LOGGER_QT_SUPPORT)
-    add_definitions(-DMU_APP_NAME="App")
-    add_definitions(-DMU_APP_REVISION="123abs")
-    add_definitions(-DMU_APP_BUILD_NUMBER="123456")
-    add_definitions(-DMU_APP_VERSION="4.0.0")
-    add_definitions(-DMU_APP_VERSION_LABEL="")
-    add_definitions(-DMU_APP_INSTALL_SUFFIX="")
-    add_definitions(-DMU_APP_INSTALL_PREFIX="")
-    add_definitions(-DMU_APP_INSTALL_NAME="")
-
-    if (MU_BUILD_ACCESSIBILITY_MODULE)
-        add_definitions(-DMU_BUILD_ACCESSIBILITY_MODULE)
-    endif()
-
-    if (MU_BUILD_ACTIONS_MODULE)
-        add_definitions(-DMU_BUILD_ACTIONS_MODULE)
-    endif()
-
-    if (MU_BUILD_EXTENSIONS_MODULE)
-        add_definitions(-DMU_BUILD_EXTENSIONS_MODULE)
-    endif()
-
-    if (MU_BUILD_LANGUAGES_MODULE)
-        add_definitions(-DMU_BUILD_LANGUAGES_MODULE)
-    endif()
-
-    if (MU_BUILD_MIDI_MODULE)
-        add_definitions(-DMU_BUILD_MIDI_MODULE)
-    endif()
-
-    if (MU_BUILD_MULTIINSTANCES_MODULE)
-        add_definitions(-DMU_BUILD_MULTIINSTANCES_MODULE)
-    endif()
-
-    if (MU_BUILD_NETWORK_MODULE)
-        add_definitions(-DMU_BUILD_NETWORK_MODULE)
-    endif()
-
-    if (MU_BUILD_SHORTCUTS_MODULE)
-        add_definitions(-DMU_BUILD_SHORTCUTS_MODULE)
-    endif()
-
-    if (MU_BUILD_UI_MODULE)
-        add_definitions(-DMU_BUILD_UI_MODULE)
-    endif()
-
-    if (MU_BUILD_WORKSPACE_MODULE)
-        add_definitions(-DMU_BUILD_WORKSPACE_MODULE)
-    endif()
-
-    # modules config
-    add_definitions(-DMU_LANGUAGES_SERVER_URL="http://extensions.musescore.org/4.2/languages/")
-
-endif()
-
-set(THIRDPARTY_DIR ${PROJECT_SOURCE_DIR}/thirdparty)
+add_definitions(-DQT_SUPPORT)
+add_definitions(-DKORS_LOGGER_QT_SUPPORT)
+include(muse_framework/SetupConfigure)
 
 ###########################################
 # Setup compiler and build environment
@@ -212,21 +136,11 @@ if (OS_IS_WIN)
     set(DEPENDENCIES_INC ${DEPENDENCIES_DIR}/include)
 endif(OS_IS_WIN)
 
+include(FindSndFile)
+
 ###########################################
 # Add source tree
 ###########################################
-
-if (MU_BUILD_UNIT_TESTS)
-    enable_testing()
-    message(STATUS "Enabled testing")
-
-    define_property(TARGET PROPERTY OUTPUT_XML
-        BRIEF_DOCS "List XML files outputted by google test."
-        FULL_DOCS "List XML files outputted by google test."
-    )
-
-    add_subdirectory(thirdparty/googletest)
-endif() #MU_BUILD_UNIT_TESTS
 
 add_subdirectory(${muse_framework_SOURCE_DIR}/framework ${muse_framework_BINARY_DIR})
 add_subdirectory(src)

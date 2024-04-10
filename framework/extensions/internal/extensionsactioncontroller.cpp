@@ -27,7 +27,7 @@
 
 #include "log.h"
 
-using namespace mu::extensions;
+using namespace muse::extensions;
 
 void ExtensionsActionController::init()
 {
@@ -52,10 +52,6 @@ void ExtensionsActionController::registerPlugins()
         }
     }
 
-    dispatcher()->reg(this, "manage-plugins", [this]() {
-        interactive()->open("musescore://home?section=plugins");
-    });
-
     uiActionsRegister()->reg(m_uiActions);
 }
 
@@ -73,8 +69,8 @@ void ExtensionsActionController::onPluginTriggered(const UriQuery& q)
     }
 
     IInteractive::Result result = interactive()->warning(
-        qtrc("extensions", "The plugin “%1” is currently disabled. Do you want to enable it now?").arg(m.title).toStdString(),
-        trc("extensions", "Alternatively, you can enable it at any time from Home > Plugins."),
+        muse::qtrc("extensions", "The plugin “%1” is currently disabled. Do you want to enable it now?").arg(m.title).toStdString(),
+        muse::trc("extensions", "Alternatively, you can enable it at any time from Home > Plugins."),
         { IInteractive::Button::No, IInteractive::Button::Yes });
 
     if (result.standardButton() == IInteractive::Button::Yes) {

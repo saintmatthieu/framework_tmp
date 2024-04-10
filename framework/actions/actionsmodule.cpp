@@ -27,8 +27,9 @@
 #include "global/api/iapiregister.h"
 #include "api/dispatcherapi.h"
 
-using namespace mu::actions;
-using namespace mu::modularity;
+using namespace muse::actions;
+using namespace muse::actions::api;
+using namespace muse::modularity;
 
 std::string ActionsModule::moduleName() const
 {
@@ -42,7 +43,7 @@ void ActionsModule::registerExports()
 
 void ActionsModule::registerApi()
 {
-    using namespace mu::api;
+    using namespace muse::api;
 
     auto api = ioc()->resolve<IApiRegister>(moduleName());
     if (api) {

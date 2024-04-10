@@ -18,7 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-set(MODULE shortcuts)
+declare_module(muse_shortcuts)
+set(MODULE_ALIAS muse::shortcuts)
+
+set(MODULE_QRC shortcuts.qrc)
 
 set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/shortcutsmodule.cpp
@@ -54,8 +57,6 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/view/editmidimappingmodel.h
     )
 
-set(MODULE_QRC shortcuts.qrc)
-
 set(MODULE_QML_IMPORT ${CMAKE_CURRENT_LIST_DIR}/qml )
 
 if (OS_IS_MAC)
@@ -84,5 +85,5 @@ if (OS_IS_MAC)
     endif()
 endif(OS_IS_MAC)
 
-include(SetupModule)
+setup_module()
 

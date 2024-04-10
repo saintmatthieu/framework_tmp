@@ -21,7 +21,7 @@
  */
 #include "messagedialog.h"
 
-using namespace mu::extensions::apiv1;
+using namespace muse::extensions::apiv1;
 
 MessageDialog::MessageDialog(QObject* parent)
     : QObject(parent) {}

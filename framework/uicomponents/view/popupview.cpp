@@ -42,7 +42,7 @@
 
 #include "log.h"
 
-using namespace mu::uicomponents;
+using namespace muse::uicomponents;
 
 PopupView::PopupView(QQuickItem* parent)
     : QObject(parent)
@@ -242,7 +242,7 @@ void PopupView::doOpen()
         }
 
         qWindow->setFlag(Qt::FramelessWindowHint, m_frameless);
-#ifdef MUE_DISABLE_UI_MODALITY
+#ifdef MUSE_MODULE_UI_DISABLE_MODALITY
         qWindow->setModality(Qt::NonModal);
 #endif
         m_window->setResizable(m_resizable);
@@ -331,7 +331,7 @@ bool PopupView::activateParentOnClose() const
     return m_activateParentOnClose;
 }
 
-mu::ui::INavigationControl* PopupView::navigationParentControl() const
+muse::ui::INavigationControl* PopupView::navigationParentControl() const
 {
     return m_navigationParentControl;
 }

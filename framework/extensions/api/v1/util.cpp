@@ -27,9 +27,9 @@
 
 #include "log.h"
 
-using namespace mu;
+using namespace muse;
 
-namespace mu::extensions::apiv1 {
+namespace muse::extensions::apiv1 {
 //---------------------------------------------------------
 //   FileIO
 //---------------------------------------------------------

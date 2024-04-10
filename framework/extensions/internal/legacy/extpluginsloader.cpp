@@ -27,8 +27,9 @@
 
 #include "log.h"
 
-using namespace mu::extensions;
-using namespace mu::extensions::legacy;
+using namespace muse;
+using namespace muse::extensions;
+using namespace muse::extensions::legacy;
 
 ManifestList ExtPluginsLoader::loadManifesList(const io::path_t& defPath, const io::path_t& extPath) const
 {
@@ -70,7 +71,7 @@ ManifestList ExtPluginsLoader::manifesList(const io::path_t& rootPath) const
     return manifests;
 }
 
-mu::io::paths_t ExtPluginsLoader::qmlsPaths(const io::path_t& rootPath) const
+io::paths_t ExtPluginsLoader::qmlsPaths(const io::path_t& rootPath) const
 {
     RetVal<io::paths_t> paths = io::Dir::scanFiles(rootPath, { "*.qml" });
     if (!paths.ret) {
@@ -92,7 +93,7 @@ Manifest ExtPluginsLoader::parseManifest(const io::path_t& path) const
     io::FileInfo fi(path);
 
     Manifest m;
-    m.uri = Uri("musescore://extensions/v1/" + fi.baseName().toLower().toStdString());
+    m.uri = Uri("muse://extensions/v1/" + fi.baseName().toLower().toStdString());
     m.type = Type::Macros;
     m.apiversion = 1;
     m.legacyPlugin = true;

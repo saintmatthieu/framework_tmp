@@ -20,16 +20,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MU_UI_IUIENGINE_H
-#define MU_UI_IUIENGINE_H
+#ifndef MUSE_UI_IUIENGINE_H
+#define MUSE_UI_IUIENGINE_H
 
 #include <QString>
 
 #include "modularity/imoduleinterface.h"
 
 class QQmlEngine;
+class QQmlApplicationEngine;
 
-namespace mu::ui {
+namespace muse::ui {
 class IUiEngine : MODULE_EXPORT_INTERFACE
 {
     INTERFACE_ID(IUiEngine)
@@ -38,11 +39,13 @@ public:
     virtual ~IUiEngine() {}
 
     virtual void updateTheme() = 0;
+    virtual QQmlApplicationEngine* qmlAppEngine() const = 0;
     virtual QQmlEngine* qmlEngine() const = 0;
+    virtual void quit() = 0;
     virtual void clearComponentCache() = 0;
 
     virtual void addSourceImportPath(const QString& path) = 0;
 };
 }
 
-#endif // MU_UI_UIENGINEMODULE_H
+#endif // MUSE_UI_UIENGINEMODULE_H

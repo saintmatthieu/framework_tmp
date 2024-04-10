@@ -27,9 +27,9 @@
 #include "framework/ui/uimodule.h"
 #include "framework/global/globalmodule.h"
 
-static mu::testing::SuiteEnvironment accessibility_senv(
+static muse::testing::SuiteEnvironment accessibility_senv(
 {
-    new mu::accessibility::AccessibilityModule()
+    new muse::accessibility::AccessibilityModule()
 },
     nullptr,
     []() {

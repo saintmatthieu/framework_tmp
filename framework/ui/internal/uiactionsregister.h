@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_UI_UIACTIONSREGISTER_H
-#define MU_UI_UIACTIONSREGISTER_H
+#ifndef MUSE_UI_UIACTIONSREGISTER_H
+#define MUSE_UI_UIACTIONSREGISTER_H
 
 #include <vector>
 #include <unordered_map>
@@ -31,7 +31,7 @@
 #include "iuicontextresolver.h"
 #include "async/asyncable.h"
 
-namespace mu::ui {
+namespace muse::ui {
 class UiActionsRegister : public IUiActionsRegister, public async::Asyncable
 {
     INJECT(IUiContextResolver, uicontextResolver)
@@ -80,4 +80,4 @@ private:
 };
 }
 
-#endif // MU_UI_UIACTIONSREGISTER_H
+#endif // MUSE_UI_UIACTIONSREGISTER_H

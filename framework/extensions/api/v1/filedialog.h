@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_EXTENSIONS_APIV1_FILEDIALOG_H
-#define MU_EXTENSIONS_APIV1_FILEDIALOG_H
+#ifndef MUSE_EXTENSIONS_APIV1_FILEDIALOG_H
+#define MUSE_EXTENSIONS_APIV1_FILEDIALOG_H
 
 #include <QObject>
 #include <QString>
@@ -28,7 +28,7 @@
 #include "global/modularity/ioc.h"
 #include "global/iinteractive.h"
 
-namespace mu::extensions::apiv1 {
+namespace muse::extensions::apiv1 {
 class FileDialog : public QObject
 {
     Q_OBJECT
@@ -85,4 +85,4 @@ private:
 };
 }
 
-#endif // MU_EXTENSIONS_APIV1_FILEDIALOG_H
+#endif // MUSE_EXTENSIONS_APIV1_FILEDIALOG_H

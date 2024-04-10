@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_UICOMPONENTS_TEXTINPUTFIELDMODEL_H
-#define MU_UICOMPONENTS_TEXTINPUTFIELDMODEL_H
+#ifndef MUSE_UICOMPONENTS_TEXTINPUTFIELDMODEL_H
+#define MUSE_UICOMPONENTS_TEXTINPUTFIELDMODEL_H
 
 #include <QObject>
 
@@ -30,7 +30,7 @@
 #include "shortcuts/ishortcutsregister.h"
 #include "actions/iactionsdispatcher.h"
 
-namespace mu::uicomponents {
+namespace muse::uicomponents {
 class TextInputFieldModel : public QObject, public async::Asyncable
 {
     Q_OBJECT
@@ -53,4 +53,4 @@ private:
 };
 }
 
-#endif // MU_UICOMPONENTS_TEXTINPUTFIELDMODEL_H
+#endif // MUSE_UICOMPONENTS_TEXTINPUTFIELDMODEL_H

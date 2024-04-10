@@ -19,12 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_EXTENSIONS_EXTPLUGINSLOADER_H
-#define MU_EXTENSIONS_EXTPLUGINSLOADER_H
+#ifndef MUSE_EXTENSIONS_EXTPLUGINSLOADER_H
+#define MUSE_EXTENSIONS_EXTPLUGINSLOADER_H
 
 #include "../../extensionstypes.h"
 
-namespace mu::extensions::legacy {
+namespace muse::extensions::legacy {
 //! NOTE Searches and parses qml files of old plugins
 class ExtPluginsLoader
 {
@@ -36,10 +36,10 @@ public:
 private:
 
     ManifestList manifesList(const io::path_t& rootPath) const;
-    mu::io::paths_t qmlsPaths(const io::path_t& rootPath) const;
+    io::paths_t qmlsPaths(const io::path_t& rootPath) const;
     Manifest parseManifest(const io::path_t& path) const;
     void resolvePaths(Manifest& m, const io::path_t& rootDirPath) const;
 };
 }
 
-#endif // MU_EXTENSIONS_EXTPLUGINSLOADER_H
+#endif // MUSE_EXTENSIONS_EXTPLUGINSLOADER_H

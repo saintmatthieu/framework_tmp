@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_EXTENSIONS_EXTENSIONSTYPES_H
-#define MU_EXTENSIONS_EXTENSIONSTYPES_H
+#ifndef MUSE_EXTENSIONS_EXTENSIONSTYPES_H
+#define MUSE_EXTENSIONS_EXTENSIONSTYPES_H
 
 #include <vector>
 #include <map>
@@ -30,11 +30,14 @@
 #include "global/io/path.h"
 #include "global/types/translatablestring.h"
 
-namespace mu::extensions {
+namespace muse::extensions {
 //! NOTE Api versions:
 //! 1 - plugins from 3х
 //! 2 - extensions
 constexpr int DEFAULT_API_VERSION = 2;
+
+//! NOTE Default extension dialog modality
+constexpr bool DEFAULT_MODAL = false;
 
 enum class Type {
     Undefined = 0,
@@ -74,8 +77,9 @@ enum Filter {
 struct Action {
     std::string code;
     Type type = Type::Undefined;
+    bool modal = DEFAULT_MODAL;
     String title;
-    mu::io::path_t main;
+    io::path_t main;
     int apiversion = DEFAULT_API_VERSION;
     bool legacyPlugin = false;
 
@@ -93,7 +97,7 @@ inline UriQuery makeUriQuery(const Uri& uri, const std::string& actionCode)
 manifest.json
 {
 
-"uri": String,                    // Example: musescore://module/target/name
+"uri": String,                    // Example: muse://module/target/name
 "type": String,                   // Values: form, macros
 "title": String,                  //
 "description": String,            //
@@ -111,7 +115,7 @@ struct Manifest {
     String title;
     String description;
     String category;
-    mu::io::path_t thumbnail;
+    io::path_t thumbnail;
     String version;
     int apiversion = DEFAULT_API_VERSION;
     bool legacyPlugin = false;
@@ -142,4 +146,4 @@ using ManifestList = std::vector<Manifest>;
 using KnownCategories = std::map<std::string /*name*/, TranslatableString /*title*/>;
 }
 
-#endif // MU_EXTENSIONS_EXTENSIONSTYPES_H
+#endif // MUSE_EXTENSIONS_EXTENSIONSTYPES_H

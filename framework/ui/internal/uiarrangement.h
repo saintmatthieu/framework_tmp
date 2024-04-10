@@ -20,8 +20,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MU_UI_UIARRANGEMENT_H
-#define MU_UI_UIARRANGEMENT_H
+#ifndef MUSE_UI_UIARRANGEMENT_H
+#define MUSE_UI_UIARRANGEMENT_H
 
 #include <QString>
 #include <QByteArray>
@@ -34,7 +34,7 @@
 #include "workspace/iworkspacesdataprovider.h"
 #include "uiaction.h"
 
-namespace mu::ui {
+namespace muse::ui {
 class UiArrangement : public async::Asyncable
 {
     INJECT(workspace::IWorkspacesDataProvider, workspacesDataProvider)
@@ -73,4 +73,4 @@ private:
 };
 }
 
-#endif // MU_UI_UIARRANGEMENT_H
+#endif // MUSE_UI_UIARRANGEMENT_H

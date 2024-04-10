@@ -26,8 +26,8 @@
 
 #include "log.h"
 
-using namespace mu;
-using namespace mu::ui;
+using namespace muse;
+using namespace muse::ui;
 
 static const QString CODEKEY_KEY("codeKey");
 static const QString TITLE_KEY("title");
@@ -65,16 +65,16 @@ static QString titleForTheme(const ThemeInfo& theme)
 {
     if (theme.codeKey == LIGHT_THEME_CODE) {
         //: The name of the light ui theme
-        return qtrc("ui", "Light");
+        return muse::qtrc("ui", "Light");
     } else if (theme.codeKey == DARK_THEME_CODE) {
         //: The name of the dark ui theme
-        return qtrc("ui", "Dark");
+        return muse::qtrc("ui", "Dark");
     } else if (theme.codeKey == HIGH_CONTRAST_WHITE_THEME_CODE) {
         //: The name of the high contrast light ui theme
-        return qtrc("ui", "White");
+        return muse::qtrc("ui", "White");
     } else if (theme.codeKey == HIGH_CONTRAST_BLACK_THEME_CODE) {
         //: The name of the high contrast dark ui theme
-        return qtrc("ui", "Black");
+        return muse::qtrc("ui", "Black");
     }
 
     return QString::fromStdString(theme.title);

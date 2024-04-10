@@ -32,7 +32,7 @@
 
 #include "log.h"
 
-using namespace mu::midi;
+using namespace muse::midi;
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_FREEBSD)
 #include "internal/platform/lin/alsamidioutport.h"
@@ -78,7 +78,7 @@ void MidiModule::registerExports()
 
 void MidiModule::registerUiTypes()
 {
-    qmlRegisterType<MidiPortDevModel>("MuseScore.Midi", 1, 0, "MidiPortDevModel");
+    qmlRegisterType<MidiPortDevModel>("Muse.Midi", 1, 0, "MidiPortDevModel");
 }
 
 void MidiModule::onInit(const IApplication::RunMode& mode)

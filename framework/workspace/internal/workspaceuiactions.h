@@ -19,15 +19,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_WORKSPACE_WORKSPACEUIACTIONS_H
-#define MU_WORKSPACE_WORKSPACEUIACTIONS_H
+#ifndef MUSE_WORKSPACE_WORKSPACEUIACTIONS_H
+#define MUSE_WORKSPACE_WORKSPACEUIACTIONS_H
 
 #include "framework/ui/iuiactionsmodule.h"
 #include "workspaceactioncontroller.h"
 #include "modularity/ioc.h"
 #include "ui/iuicontextresolver.h"
 
-namespace mu::workspace {
+namespace muse::workspace {
 class WorkspaceUiActions : public ui::IUiActionsModule
 {
     Inject<ui::IUiContextResolver> uicontextResolver;

@@ -18,7 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-set(MODULE uicomponents)
+declare_module(muse_uicomponents)
+set(MODULE_ALIAS muse::uicomponents)
 
 if (MUE_COMPILE_QT5_COMPAT)
     set(MODULE_QRC uicomponents.qrc graphicaleffects_qt5.qrc)
@@ -114,11 +115,11 @@ if (OS_IS_WIN)
         )
 endif(OS_IS_WIN)
 
-if (MUE_DISABLE_UI_MODALITY)
-    set(MODULE_DEF ${MODULE_DEF} -DMUE_DISABLE_UI_MODALITY)
+if (MUSE_MODULE_UI_DISABLE_MODALITY)
+    set(MODULE_DEF ${MODULE_DEF} -DMUSE_MODULE_UI_DISABLE_MODALITY)
 endif()
 
 set(MODULE_USE_UNITY_NONE ON)
-include(SetupModule)
+setup_module()
 
 

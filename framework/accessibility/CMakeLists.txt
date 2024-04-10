@@ -18,7 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-set(MODULE accessibility)
+declare_module(muse_accessibility)
+set(MODULE_ALIAS muse::accessibility)
 
 set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/accessibilitymodule.cpp
@@ -55,12 +56,12 @@ if (OS_IS_LIN)
 endif()
 
 
-if (MUE_ENABLE_ACCESSIBILITY_TRACE)
-    set(MODULE_DEF ${MODULE_DEF} -DMUE_ENABLE_ACCESSIBILITY_TRACE )
+if (MUSE_MODULE_ACCESSIBILITY_TRACE)
+    set(MODULE_DEF ${MODULE_DEF} -DMUSE_MODULE_ACCESSIBILITY_TRACE )
 endif()
 
-include(SetupModule)
+setup_module()
 
-if (MUE_BUILD_ACCESSIBILITY_TESTS)
+if (MUSE_MODULE_ACCESSIBILITY_TESTS)
     add_subdirectory(tests)
 endif()

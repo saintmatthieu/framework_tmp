@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_UI_IUIACTIONSREGISTER_H
-#define MU_UI_IUIACTIONSREGISTER_H
+#ifndef MUSE_UI_IUIACTIONSREGISTER_H
+#define MUSE_UI_IUIACTIONSREGISTER_H
 
 #include "modularity/imoduleinterface.h"
 #include "global/async/channel.h"
@@ -28,7 +28,7 @@
 #include "iuiactionsmodule.h"
 #include "uiaction.h"
 
-namespace mu::ui {
+namespace muse::ui {
 class IUiActionsRegister : MODULE_EXPORT_INTERFACE
 {
     INTERFACE_ID(IUiActionsRegister)
@@ -38,11 +38,11 @@ public:
 
     virtual void reg(const IUiActionsModulePtr& actions) = 0;
 
-    virtual const UiAction& action(const actions::ActionCode& code) const = 0;
+    virtual const UiAction& action(const muse::actions::ActionCode& code) const = 0;
     virtual const std::vector<UiAction> getActions() const = 0;
-    virtual UiActionState actionState(const actions::ActionCode& code) const = 0;
-    virtual async::Channel<actions::ActionCodeList> actionStateChanged() const = 0;
+    virtual UiActionState actionState(const muse::actions::ActionCode& code) const = 0;
+    virtual async::Channel<muse::actions::ActionCodeList> actionStateChanged() const = 0;
 };
 }
 
-#endif // MU_UI_IUIACTIONSREGISTER_H
+#endif // MUSE_UI_IUIACTIONSREGISTER_H

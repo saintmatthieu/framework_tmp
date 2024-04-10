@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_LANGUAGES_LANGUAGESSERVICE_H
-#define MU_LANGUAGES_LANGUAGESSERVICE_H
+#ifndef MUSE_LANGUAGES_LANGUAGESSERVICE_H
+#define MUSE_LANGUAGES_LANGUAGESSERVICE_H
 
 #include "ilanguagesservice.h"
 #include "async/asyncable.h"
@@ -33,7 +33,7 @@
 
 class QTranslator;
 
-namespace mu::languages {
+namespace muse::languages {
 class LanguagesService : public ILanguagesService, public async::Asyncable
 {
     INJECT(ILanguagesConfiguration, configuration)
@@ -52,7 +52,7 @@ public:
     bool hasPlaceholderLanguage() const override;
     const Language& placeholderLanguage() const override;
 
-    mu::Progress update(const QString& languageCode) override;
+    Progress update(const QString& languageCode) override;
 
     bool needRestartToApplyLanguageChange() const override;
     async::Channel<bool> needRestartToApplyLanguageChangeChanged() const override;
@@ -61,12 +61,12 @@ private:
     void loadLanguages();
 
     void setCurrentLanguage(const QString& languageCode);
-    QString effectiveLanguageCode(const QString& languageCode) const;
+    QString effectiveLanguageCode(QString languageCode) const;
     Ret loadLanguage(Language& lang);
 
-    void th_update(const QString& languageCode, mu::Progress progress);
+    void th_update(const QString& languageCode, Progress progress);
     bool canUpdate(const QString& languageCode);
-    Ret downloadLanguage(const QString& languageCode, mu::Progress progress) const;
+    Ret downloadLanguage(const QString& languageCode, Progress progress) const;
     RetVal<QString> fileHash(const io::path_t& path);
 
 private:
@@ -76,7 +76,7 @@ private:
     Language m_placeholderLanguage;
 
     QSet<QTranslator*> m_translators;
-    mutable QHash<QString, mu::Progress> m_updateOperationsHash;
+    mutable QHash<QString, Progress> m_updateOperationsHash;
 
     bool m_inited = false;
     bool m_needRestartToApplyLanguageChange = false;
@@ -84,4 +84,4 @@ private:
 };
 }
 
-#endif // MU_LANGUAGES_LANGUAGESSERVICE_H
+#endif // MUSE_LANGUAGES_LANGUAGESSERVICE_H

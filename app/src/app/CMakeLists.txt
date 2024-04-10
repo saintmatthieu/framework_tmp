@@ -57,7 +57,7 @@ set(LINK_LIB
     muse::global
 )
 
-if (MU_BUILD_ACCESSIBILITY_MODULE)
+if (MUSE_MODULE_ACCESSIBILITY)
     list(APPEND LINK_LIB muse::accessibility)
 endif()
 
@@ -113,7 +113,8 @@ add_executable(app
 target_include_directories(app PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${MUSE_FRAMEWORK_PATH}
-    ${MUSE_FRAMEWORK_PATH}/global
+    ${MUSE_FRAMEWORK_PATH}/framework
+    ${MUSE_FRAMEWORK_PATH}/framework/global
 )
 
 

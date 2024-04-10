@@ -24,12 +24,22 @@
 
 #include "../thirdparty/kors_modularity/modularity/ioc.h" // IWYU pragma: export
 
+namespace muse {
+template<class I>
+using Inject = kors::modularity::Inject<I>;
+}
+
+namespace muse {
+template<class I>
+using Inject = kors::modularity::Inject<I>;
+}
+
 namespace mu {
 template<class I>
 using Inject = kors::modularity::Inject<I>;
 }
 
-namespace mu::modularity {
+namespace muse::modularity {
 using ModulesIoC = kors::modularity::ModulesIoC;
 
 template<class T>

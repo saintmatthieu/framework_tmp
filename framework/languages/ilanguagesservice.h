@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_LANGUAGES_ILANGUAGESSERVICE_H
-#define MU_LANGUAGES_ILANGUAGESSERVICE_H
+#ifndef MUSE_LANGUAGES_ILANGUAGESSERVICE_H
+#define MUSE_LANGUAGES_ILANGUAGESSERVICE_H
 
 #include "modularity/imoduleinterface.h"
 #include "async/notification.h"
@@ -28,7 +28,7 @@
 
 #include "languagestypes.h"
 
-namespace mu::languages {
+namespace muse::languages {
 class ILanguagesService : MODULE_EXPORT_INTERFACE
 {
     INTERFACE_ID(ILanguagesService)
@@ -44,11 +44,11 @@ public:
     virtual bool hasPlaceholderLanguage() const = 0;
     virtual const Language& placeholderLanguage() const = 0;
 
-    virtual mu::Progress update(const QString& languageCode) = 0;
+    virtual Progress update(const QString& languageCode) = 0;
 
     virtual bool needRestartToApplyLanguageChange() const = 0;
     virtual async::Channel<bool> needRestartToApplyLanguageChangeChanged() const = 0;
 };
 }
 
-#endif // MU_LANGUAGES_ILANGUAGESSERVICE_H
+#endif // MUSE_LANGUAGES_ILANGUAGESSERVICE_H

@@ -31,8 +31,8 @@
 #include "containers.h"
 #include "log.h"
 
-using namespace mu;
-using namespace mu::ui;
+using namespace muse;
+using namespace muse::ui;
 
 class WidgetDialogEventFilter : public QObject
 {
@@ -105,7 +105,8 @@ RetVal<Val> InteractiveProvider::question(const std::string& title, const IInter
     return openStandardDialog("QUESTION", title, text, {}, buttons, defBtn, options);
 }
 
-RetVal<Val> InteractiveProvider::info(const std::string& title, const IInteractive::Text& text, const IInteractive::ButtonDatas& buttons,
+RetVal<Val> InteractiveProvider::info(const std::string& title, const IInteractive::Text& text,
+                                      const IInteractive::ButtonDatas& buttons,
                                       int defBtn,
                                       const IInteractive::Options& options)
 {
@@ -130,7 +131,7 @@ RetVal<Val> InteractiveProvider::error(const std::string& title, const IInteract
     return openStandardDialog("ERROR", title, text, detailedText, buttons, defBtn, options);
 }
 
-Ret InteractiveProvider::showProgress(const std::string& title, mu::Progress* progress)
+Ret InteractiveProvider::showProgress(const std::string& title, Progress* progress)
 {
     IF_ASSERT_FAILED(progress) {
         return false;
@@ -161,7 +162,7 @@ Ret InteractiveProvider::showProgress(const std::string& title, mu::Progress* pr
         }
     }
 
-    return make_ok();
+    return muse::make_ok();
 }
 
 RetVal<io::path_t> InteractiveProvider::selectOpeningFile(const std::string& title, const io::path_t& dir,
@@ -330,7 +331,7 @@ void InteractiveProvider::closeObject(const ObjectInfo& obj)
 
 void InteractiveProvider::fillExtData(QmlLaunchData* data, const UriQuery& q) const
 {
-    static Uri VIEWER_URI = Uri("musescore://extensions/viewer");
+    static Uri VIEWER_URI = Uri("muse://extensions/viewer");
 
     ContainerMeta meta = uriRegister()->meta(VIEWER_URI);
     data->setValue("path", meta.qmlPath);
@@ -339,8 +340,14 @@ void InteractiveProvider::fillExtData(QmlLaunchData* data, const UriQuery& q) co
     QVariantMap params;
     params["uri"] = QString::fromStdString(q.toString());
 
+    //! NOTE Extension dialogs open as non-modal by default
+    //! The modal parameter must be present in the uri
+    //! But here, just in case, `true` is indicated by default,
+    //! since this value is set in the base class of the dialog by default
+    params["modal"] = q.param("modal", Val(true)).toBool();
+
+    data->setValue("uri", QString::fromStdString(VIEWER_URI.toString()));
     data->setValue("sync", params.value("sync", false));
-    data->setValue("modal", params.value("modal", ""));
     data->setValue("params", params);
 }
 
@@ -804,7 +811,7 @@ void InteractiveProvider::onClose(const QString& objectId, const QVariant& jsrv)
     if (found) {
         notifyAboutCurrentUriChanged();
     } else {
-        mu::remove_if(m_floatingObjects, [objectId](const ObjectInfo& obj) {
+        muse::remove_if(m_floatingObjects, [objectId](const ObjectInfo& obj) {
             return obj.objectId == objectId;
         });
     }

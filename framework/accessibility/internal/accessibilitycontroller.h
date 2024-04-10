@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H
-#define MU_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H
+#ifndef MUSE_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H
+#define MUSE_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H
 
 #include <memory>
 #include <QObject>
@@ -28,6 +28,7 @@
 #include <QHash>
 
 #include "global/async/asyncable.h"
+#include "global/async/channel.h"
 #include "global/iapplication.h"
 
 #include "modularity/ioc.h"
@@ -41,11 +42,11 @@
 class QAccessibleInterface;
 class QAccessibleEvent;
 
-namespace mu::diagnostics {
+namespace muse::diagnostics {
 class DiagnosticAccessibleModel;
 }
 
-namespace mu::accessibility {
+namespace muse::accessibility {
 class AccessibilityController : public IAccessibilityController, public IAccessible, public async::Asyncable,
     public std::enable_shared_from_this<AccessibilityController>
 {
@@ -127,7 +128,7 @@ public:
 
 private:
 
-    friend class mu::diagnostics::DiagnosticAccessibleModel;
+    friend class muse::diagnostics::DiagnosticAccessibleModel;
 
     struct Item
     {
@@ -171,4 +172,4 @@ private:
 };
 }
 
-#endif // MU_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H
+#endif // MUSE_ACCESSIBILITY_ACCESSIBILITYCONTROLLER_H

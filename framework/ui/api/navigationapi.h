@@ -19,8 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_API_NAVIGATIONAPI_H
-#define MU_API_NAVIGATIONAPI_H
+#ifndef MUSE_API_NAVIGATIONAPI_H
+#define MUSE_API_NAVIGATIONAPI_H
 
 #include <QString>
 #include <QJSValue>
@@ -30,8 +30,8 @@
 #include "actions/iactionsdispatcher.h"
 #include "ui/inavigationcontroller.h"
 
-namespace mu::api {
-class NavigationApi : public ApiObject
+namespace muse::api {
+class NavigationApi : public api::ApiObject
 {
     Q_OBJECT
 
@@ -39,7 +39,7 @@ class NavigationApi : public ApiObject
     INJECT(ui::INavigationController, navigation)
 
 public:
-    explicit NavigationApi(IApiEngine* e);
+    explicit NavigationApi(api::IApiEngine* e);
     ~NavigationApi();
 
     Q_INVOKABLE void nextPanel();
@@ -61,4 +61,4 @@ public:
 };
 }
 
-#endif // MU_API_NAVIGATIONAPI_H
+#endif // MUSE_API_NAVIGATIONAPI_H

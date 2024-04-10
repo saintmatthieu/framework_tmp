@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QWindow>
 
-using namespace mu::uicomponents;
+using namespace muse::uicomponents;
 
 PopupViewCloseController::PopupViewCloseController(QObject* parent)
     : QObject(parent)
@@ -102,7 +102,7 @@ void PopupViewCloseController::setIsCloseOnPressOutsideParent(bool close)
     m_isCloseOnPressOutsideParent = close;
 }
 
-mu::async::Notification PopupViewCloseController::closeNotification() const
+muse::async::Notification PopupViewCloseController::closeNotification() const
 {
     return m_closeNotification;
 }

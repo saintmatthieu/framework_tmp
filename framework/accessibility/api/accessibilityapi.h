@@ -19,26 +19,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MU_API_ACCESSIBILITYAPI_H
-#define MU_API_ACCESSIBILITYAPI_H
+#ifndef MUSE_ACCESSIBILITY_API_ACCESSIBILITYAPI_H
+#define MUSE_ACCESSIBILITY_API_ACCESSIBILITYAPI_H
 
 #include "api/apiobject.h"
 
 #include "modularity/ioc.h"
 #include "accessibility/iaccessibilitycontroller.h"
 
-namespace mu::api {
-class AccessibilityApi : public ApiObject
+namespace muse::accessibility::api {
+class AccessibilityApi : public muse::api::ApiObject
 {
     Q_OBJECT
 
-    INJECT(accessibility::IAccessibilityController, accessibilityController)
+    INJECT(IAccessibilityController, accessibilityController)
 
 public:
-    explicit AccessibilityApi(IApiEngine* e);
+    explicit AccessibilityApi(muse::api::IApiEngine* e);
 
     Q_INVOKABLE QString currentName() const;
 };
 }
 
-#endif // MU_API_ACCESSIBILITYAPI_H
+#endif // MUSE_ACCESSIBILITY_API_ACCESSIBILITYAPI_H

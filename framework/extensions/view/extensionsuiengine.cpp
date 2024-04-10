@@ -24,9 +24,9 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 
-using namespace mu::extensions;
-namespace mu::extensions {
-class QmlApiEngine : public mu::api::IApiEngine
+using namespace muse::extensions;
+namespace muse::extensions {
+class QmlApiEngine : public muse::api::IApiEngine
 {
 public:
     QmlApiEngine(QQmlEngine* e)
