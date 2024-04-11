@@ -16,7 +16,7 @@ foreach(NAME ${MUSE_FRAMEWORK_MODULES})
     disable_module_deps(${NAME})
 endforeach()
 
-if (NOT MUSE_BUILD_UNIT_TESTS)
+if (NOT MUSE_ENABLE_UNIT_TESTS)
     foreach(NAME ${MUSE_FRAMEWORK_MODULES})
         disable_module_tests(${NAME})
     endforeach()
@@ -31,6 +31,8 @@ endif()
 if (NOT MUSE_MODULE_DIAGNOSTICS)
     set(MUSE_MODULE_DIAGNOSTICS_CRASHPAD_CLIENT OFF)
 endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/MuseFetchDependencies.cmake)
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/muse_framework_config.h.in muse_framework_config.h )
 

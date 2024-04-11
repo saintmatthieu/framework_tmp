@@ -67,10 +67,11 @@ set(APP_BUILD_MODE "dev" CACHE STRING "Build mode")
 
 set(APP_REVISION "" CACHE STRING "Build revision")
 
-include(muse_framework/DeclareOptions)
+include(${MUSE_FRAMEWORK_SRC_PATH}/cmake/MuseDeclareOptions.cmake)
 
 set(MUSE_MODULE_AUTOBOT OFF)
 set(MUSE_MODULE_DRAW OFF)
+set(MUSE_MODULE_UPDATE OFF)
 
 # Modules (alphabetical order please)
 option(MU_BUILD_APPSHELL_MODULE "Build appshell module" OFF)
@@ -80,13 +81,6 @@ option(MU_BUILD_APPSHELL_MODULE "Build appshell module" OFF)
 # === Pack ===
 option(MU_RUN_LRELEASE "Generate .qm files" ON)
 
-# === Tests ===
-option(MU_BUILD_UNIT_TESTS "Build unit tests" OFF)
-option(MU_BUILD_ASAN "Enable Address Sanitizer" OFF)
-set(MU_CRASH_REPORT_URL "" CACHE STRING "URL where to send crash reports")
-option(MU_CRASHPAD_HANDLER_PATH "Path to custom crashpad_handler executable (optional)" "")
-
-# === Tools ===
 
 # === Compile ===
 option(MU_COMPILE_BUILD_MACOS_APPLE_SILICON "Build for Apple Silicon architecture. Only applicable on Macs with Apple Silicon, and requires suitable Qt version." OFF)
@@ -104,7 +98,7 @@ option(MU_ENABLE_STRING_DEBUG_HACK "Enable string debug hack (only clang)" ON)
 ###########################################
 add_definitions(-DQT_SUPPORT)
 add_definitions(-DKORS_LOGGER_QT_SUPPORT)
-include(muse_framework/SetupConfigure)
+include(${MUSE_FRAMEWORK_SRC_PATH}/cmake/MuseSetupConfiguration.cmake)
 
 ###########################################
 # Setup compiler and build environment
@@ -122,21 +116,6 @@ endif(MUE_COMPILE_USE_CCACHE)
 ###########################################
 set(QT_MIN_VERSION "6.2.4")
 include(FindQt6)
-
-if (OS_IS_WIN)
-    include(FetchContent)
-    FetchContent_Declare(
-      muse_prebuild_win_deps
-      GIT_REPOSITORY https://github.com/musescore/musescore_prebuild_win_deps.git
-      GIT_TAG        HEAD
-    )
-    FetchContent_MakeAvailable(muse_prebuild_win_deps)
-    set(DEPENDENCIES_DIR ${muse_prebuild_win_deps_SOURCE_DIR})
-    set(DEPENDENCIES_LIB_DIR ${DEPENDENCIES_DIR}/libx64)
-    set(DEPENDENCIES_INC ${DEPENDENCIES_DIR}/include)
-endif(OS_IS_WIN)
-
-include(FindSndFile)
 
 ###########################################
 # Add source tree

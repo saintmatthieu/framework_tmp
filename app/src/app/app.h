@@ -31,18 +31,18 @@
 namespace au::app {
 class App
 {
-    mu::Inject<mu::IApplication> muapplication;
+    muse::Inject<muse::IApplication> muapplication;
 
 public:
     App();
 
-    void addModule(mu::modularity::IModuleSetup* module);
+    void addModule(muse::modularity::IModuleSetup* module);
 
     int run(int argc, char** argv);
 
 private:
 
-    QList<mu::modularity::IModuleSetup*> m_modules;
+    QList<muse::modularity::IModuleSetup*> m_modules;
 };
 }
 
