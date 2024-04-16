@@ -10,8 +10,10 @@ set(SCAN_BIN ${CMAKE_CURRENT_LIST_DIR}/tools/linux/scan_files)
 set(CONFIG ${CMAKE_CURRENT_LIST_DIR}/uncrustify_muse.cfg)
 set(UNTIDY_FILE ".untidy")
 
-file(CHMOD ${UNCRUSTIFY_BIN} PERMISSIONS OWNER_EXECUTE)
-file(CHMOD ${SCAN_BIN} PERMISSIONS OWNER_EXECUTE)
+execute_process(COMMAND chmod a+rx
+    ${UNCRUSTIFY_BIN}
+    ${SCAN_BIN}
+)
 
 execute_process(
     COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/run_scan.sh ${SCAN_BIN} ${UNCRUSTIFY_BIN} ${CONFIG} ${UNTIDY_FILE} ${SCAN_DIR}
