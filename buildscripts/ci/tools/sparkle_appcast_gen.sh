@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-only
-# MuseScore-CLA-applies
+# MuseScore-Studio-CLA-applies
 #
-# MuseScore
+# MuseScore Studio
 # Music Composition & Notation
 #
-# Copyright (C) 2021 MuseScore BVBA and others
+# Copyright (C) 2021 MuseScore Limited
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -61,7 +61,7 @@ echo "UPDATE_URL: $UPDATE_URL"
 RSS_DATE="$(LANG=C date +'%a, %d %b %Y %H:%M:%S %z')"
 FILESIZE="$(wc -c ${ARTIFACT_PATH} | awk '{print $1}')"
 APPCAST_URL="https://sparkle.musescore.org/$RELEASE_CHANNEL/$MAJOR_VERSION/$PLATFORM/appcast.xml"
-GIT_LOG=$(build/ci/tools/generateGitLog.sh)
+GIT_LOG=$(./buildscripts/ci/tools/generateGitLog.sh)
 
 #use dummy values for now
 echo "<rss xmlns:sparkle=\"http://www.andymatuschak.org/xml-namespaces/sparkle\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" version=\"2.0\">

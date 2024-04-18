@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-only
-# MuseScore-CLA-applies
+# MuseScore-Studio-CLA-applies
 #
-# MuseScore
+# MuseScore Studio
 # Music Composition & Notation
 #
-# Copyright (C) 2021 MuseScore BVBA and others
+# Copyright (C) 2021 MuseScore Limited
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -25,7 +25,7 @@ DUMPSYMS_BIN=/c/breakpad_tools/dump_syms.exe
 ARTIFACTS_DIR=build.artifacts
 BUILD_DIR=build.release
 SYMBOLS_DIR=$ARTIFACTS_DIR/symbols
-MSCORE_BIN=$BUILD_DIR/src/app/MuseScore4.pdb
+MSCORE_BIN=$BUILD_DIR/src/app/MuseScoreStudio4.pdb
 
 echo "GEN_SCRIPT: $GEN_SCRIPT"
 echo "DUMPSYMS_BIN: $DUMPSYMS_BIN"
