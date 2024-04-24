@@ -26,6 +26,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/thirdparty/kors_logger/logger.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/thirdparty/kors_profiler/profiler/profiler.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/thirdparty/kors_modularity/modularity/modularity.cmake)
 
+find_package(TinyXml REQUIRED)
 set(MODULE_SRC
     ${MODULARITY_SRC}
     ${ASYNC_SRC}
@@ -119,9 +120,7 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/serialization/xmlstreamreader.h
     ${CMAKE_CURRENT_LIST_DIR}/serialization/xmlstreamwriter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/serialization/xmlstreamwriter.h
-    ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tinyxml/tinyxml2.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tinyxml/tinyxml2.h
-    ${CMAKE_CURRENT_LIST_DIR}/thirdparty/tinyxml/mu_patch.h
+    ${TINYXML_MODULE_SRC}
     ${CMAKE_CURRENT_LIST_DIR}/serialization/zipreader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/serialization/zipreader.h
     ${CMAKE_CURRENT_LIST_DIR}/serialization/zipwriter.cpp
@@ -242,6 +241,8 @@ list(APPEND MODULE_INCLUDE
 list(APPEND MODULE_LINK
     ${Z_LIB}
 )
+list(APPEND MODULE_LINK ${TINYXML_MODULE_LINK})
+set(MODULE_DEF ${TINYXML_MODULE_DEF})
 
 if (MUSE_ENABLE_CUSTOM_ALLOCATOR)
     set(MODULE_DEF ${MODULE_DEF} -DMUSE_ENABLE_CUSTOM_ALLOCATOR)
