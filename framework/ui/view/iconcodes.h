@@ -377,12 +377,14 @@ public:
 
         CLOUD = 0xF435,
 
+        WAVEFORM = 0xF43C,
         CROSS_STAFF_BEAMING = 0xF43D,
 
         TEMPO_CHANGE = 0xF43F,
 
         PLUGIN = 0xF440,
         LYRICS = 0xF441,
+        LEARN = 0xF441,
 
         STOP_FILL = 0xF447,
 
