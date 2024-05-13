@@ -37,7 +37,9 @@
 //#include "ui/internal/uiengine.h"
 
 #include "global/globalmodule.h"
-#include "global/internal/application.h"
+#include "global/internal/baseapplication.h"
+
+#include "muse_framework_config.h"
 
 #include "log.h"
 
@@ -69,13 +71,6 @@ int App::run(int argc, char** argv)
         qputenv("QT_QPA_PLATFORMTHEME", "gtk3");
     }
 #endif
-
-    const char* appName;
-    if (globalModule.app()->unstable()) {
-        appName  = "App4Development";
-    } else {
-        appName  = "App4";
-    }
 
 #ifdef Q_OS_WIN
     // NOTE: There are some problems with rendering the application window on some integrated graphics processors
@@ -121,14 +116,18 @@ int App::run(int argc, char** argv)
         app = new QApplication(argc, argv);
     }
 
-    QCoreApplication::setApplicationName(appName);
+#ifdef MUSE_APP_UNSTABLE
+    QCoreApplication::setApplicationName("MuseScore4Development");
+#else
+    QCoreApplication::setApplicationName("MuseScore4");
+#endif
     QCoreApplication::setOrganizationName("MuseScore");
     QCoreApplication::setOrganizationDomain("musescore.org");
-    QCoreApplication::setApplicationVersion(globalModule.app()->fullVersion().toString());
+    QCoreApplication::setApplicationVersion(MUSE_APP_VERSION);
 
 #if !defined(Q_OS_WIN) && !defined(Q_OS_DARWIN) && !defined(Q_OS_WASM)
     // Any OS that uses Freedesktop.org Desktop Entry Specification (e.g. Linux, BSD)
-    QGuiApplication::setDesktopFileName("org.musescore.MuseScore" MUSESCORE_INSTALL_SUFFIX ".desktop");
+    QGuiApplication::setDesktopFileName("org.musescore.MuseScore" + QString(MUSE_APP_INSTALL_SUFFIX) + ".desktop");
 #endif
 
     // commandLineParser.processBuiltinArgs(*app);
@@ -159,7 +158,7 @@ int App::run(int argc, char** argv)
     // ====================================================
     // Setup modules: apply the command line options
     // ====================================================
-    muapplication()->setRunMode(runMode);
+    //muapplication()->setRunMode(runMode);
     //applyCommandLineOptions(commandLineParser.options(), runMode);
 
     // ====================================================
@@ -382,7 +381,7 @@ int App::run(int argc, char** argv)
     // Delete modules
     qDeleteAll(m_modules);
     m_modules.clear();
-    muse::modularity::ioc()->reset();
+    muse::modularity::_ioc()->reset();
 
     delete app;
 
