@@ -5,7 +5,7 @@
  * MuseScore
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2024 MuseScore BVBA and others
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,19 +19,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "networkmodule.h"
 
-#include "modularity/ioc.h"
-#include "internal/networkmanagercreator.h"
+#include "ioc.h"
 
-using namespace muse::network;
+#include "log.h"
 
-std::string NetworkModule::moduleName() const
+#ifndef NO_QT_SUPPORT
+#include <QtQml>
+
+muse::Injectable::GetContext muse::iocCtxForQmlObject(const QObject* o)
 {
-    return "network";
+    return [o]() {
+        const QObject* p = o;
+        QQmlEngine* engine = qmlEngine(p);
+        while (!engine && p->parent()) {
+            p = p->parent();
+            engine = qmlEngine(p);
+        }
+
+        IF_ASSERT_FAILED(engine) {
+            return modularity::ContextPtr();
+        }
+
+        QmlIoCContext* qmlIoc = engine->property("ioc_context").value<QmlIoCContext*>();
+        IF_ASSERT_FAILED(qmlIoc) {
+            return modularity::ContextPtr();
+        }
+
+        return qmlIoc->ctx;
+    };
 }
 
-void NetworkModule::registerExports()
-{
-    ioc()->registerExport<INetworkManagerCreator>(moduleName(), new NetworkManagerCreator());
-}
+#endif
