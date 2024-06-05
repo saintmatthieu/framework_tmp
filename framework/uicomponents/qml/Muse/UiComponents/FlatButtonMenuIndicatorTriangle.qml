@@ -19,35 +19,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import QtQuick 2.15
 
-#include "ioc.h"
+Canvas {
+    readonly property color fillColor: ui.theme.fontPrimaryColor
+    onFillColorChanged: {
+        requestPaint()
+    }
 
-#include "log.h"
+    width: 4
+    height: 4
 
-#ifndef NO_QT_SUPPORT
-#include <QtQml>
+    anchors.margins: 2
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
 
-muse::Injectable::GetContext muse::iocCtxForQmlObject(const QObject* o)
-{
-    return [o]() {
-        const QObject* p = o;
-        QQmlEngine* engine = qmlEngine(p);
-        while (!engine && p->parent()) {
-            p = p->parent();
-            engine = qmlEngine(p);
-        }
-
-        IF_ASSERT_FAILED(engine) {
-            return modularity::ContextPtr();
-        }
-
-        QmlIoCContext* qmlIoc = engine->property("ioc_context").value<QmlIoCContext*>();
-        IF_ASSERT_FAILED(qmlIoc) {
-            return modularity::ContextPtr();
-        }
-
-        return qmlIoc->ctx;
-    };
+    onPaint: {
+        const ctx = getContext("2d");
+        ctx.fillStyle = fillColor;
+        ctx.moveTo(width, 0);
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        ctx.fill();
+    }
 }
-
-#endif

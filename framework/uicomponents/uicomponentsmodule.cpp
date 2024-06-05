@@ -37,6 +37,7 @@
 #include "view/textinputfieldmodel.h"
 #include "view/selectmultipledirectoriesmodel.h"
 #include "view/buttonboxmodel.h"
+#include "view/abstracttoolbarmodel.h"
 
 #include "view/treeview/qquicktreemodeladaptor_p.h"
 #include "view/treeview/qquickrangemodel_p.h"
@@ -57,12 +58,7 @@ using namespace muse::modularity;
 static void uicomponents_init_qrc()
 {
     Q_INIT_RESOURCE(uicomponents);
-
-#ifdef MU_QT5_COMPAT
-    Q_INIT_RESOURCE(graphicaleffects_qt5);
-#else
     Q_INIT_RESOURCE(graphicaleffects);
-#endif
 }
 
 std::string UiComponentsModule::moduleName() const
@@ -125,6 +121,8 @@ void UiComponentsModule::registerUiTypes()
     qmlRegisterType<QQuickPadding1>("Muse.UiComponents.Private", 1, 0, "Padding");
     qmlRegisterUncreatableType<QQuickSelectionMode1>("Muse.UiComponents.Private", 1, 0, "SelectionMode",
                                                      QLatin1String("Do not create objects of type SelectionMode"));
+
+    qmlRegisterUncreatableType<ToolBarItemType>("Muse.UiComponents", 1, 0, "ToolBarItemType", "Cannot create a ToolBarItemType");
 
     auto ui = ioc()->resolve<ui::IUiEngine>(moduleName());
     if (ui) {
