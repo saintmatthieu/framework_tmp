@@ -57,8 +57,8 @@ struct muse::audio::synth::Fluid {
     }
 };
 
-FluidSynth::FluidSynth(const AudioSourceParams& params)
-    : AbstractSynthesizer(params)
+FluidSynth::FluidSynth(const AudioSourceParams& params, const modularity::ContextPtr& iocCtx)
+    : AbstractSynthesizer(params, iocCtx)
 {
     m_fluid = std::make_shared<Fluid>();
 
@@ -263,7 +263,7 @@ void FluidSynth::setupSound(const PlaybackSetupData& setupData)
     };
 
     m_sequencer.channelAdded().onReceive(this, setupChannel);
-    m_sequencer.init(setupData, m_preset);
+    m_sequencer.init(setupData, m_preset, setupData.supportsSingleNoteDynamics);
 
     for (const auto& voice : m_sequencer.channels().data()) {
         for (const auto& pair : voice.second) {

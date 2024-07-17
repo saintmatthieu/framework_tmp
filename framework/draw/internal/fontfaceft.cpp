@@ -31,7 +31,9 @@
 #include FT_TRUETYPE_TABLES_H
 #include <hb-ft.h>
 
+#ifndef MUSE_MODULE_DRAW_USE_QTTEXTDRAW
 #include <ext/import-font.h>
+#endif
 
 #include "global/types/bytearray.h"
 #include "global/io/file.h"
@@ -87,7 +89,7 @@ struct muse::draw::SymbolMetrics
 
 struct muse::draw::FData
 {
-    mu::ByteArray fontData;
+    ByteArray fontData;
     FT_Face face = nullptr;
     hb_font_t* hb_font = nullptr;
     std::unordered_map<glyph_idx_t, GlyphMetrics> glyphsMetrics;
@@ -196,7 +198,7 @@ std::vector<GlyphPos> FontFaceFT::glyphs(const char32_t* text, int text_length) 
         hb_buffer_set_segment_properties(hb_buffer, &props);
         hb_buffer_guess_segment_properties(hb_buffer);
 
-        hb_shape(m_data->hb_font, hb_buffer, &HB_FEATURES[0], HB_FEATURES.size());
+        hb_shape(m_data->hb_font, hb_buffer, &HB_FEATURES[0], static_cast<unsigned int>(HB_FEATURES.size()));
         unsigned int len = hb_buffer_get_length(hb_buffer);
         result.reserve(len);
 
@@ -253,10 +255,7 @@ char32_t FontFaceFT::findCharCode(glyph_idx_t idx) const
     char32_t c = findC(idx);
 
     // check
-    {
-        glyph_idx_t i = glyphIndex(c);
-        assert(i == idx);
-    }
+    assert(glyphIndex(c) == idx);
 
     return c;
 }
@@ -305,6 +304,7 @@ f26dot6_t FontFaceFT::glyphAdvance(glyph_idx_t idx) const
     }
 }
 
+#ifndef MUSE_MODULE_DRAW_USE_QTTEXTDRAW
 const msdfgen::Shape& FontFaceFT::glyphShape(glyph_idx_t idx) const
 {
     static const msdfgen::Shape null;
@@ -332,6 +332,8 @@ const msdfgen::Shape& FontFaceFT::glyphShape(glyph_idx_t idx) const
     return m_cache.insert(std::move(v)).first->second;
 }
 
+#endif
+
 f26dot6_t FontFaceFT::leading() const
 {
     const auto& metrics = m_data->metrics;
@@ -356,6 +358,22 @@ f26dot6_t FontFaceFT::xHeight() const
     TT_OS2* os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_data->face, ft_sfnt_os2);
     if (os2 && os2->sxHeight) {
         f26dot6_t result = std::round(os2->sxHeight * m_data->face->size->metrics.y_ppem * 64.0 / (double)m_data->face->units_per_EM);
+        return result;
+    }
+
+    const glyph_idx_t glyph = glyphIndex('x');
+    GlyphMetrics* gm = glyphMetrics(glyph);
+    IF_ASSERT_FAILED(gm) {
+        return 0;
+    }
+    return gm->bbox.height();
+}
+
+f26dot6_t FontFaceFT::capHeight() const
+{
+    TT_OS2* os2 = (TT_OS2*)FT_Get_Sfnt_Table(m_data->face, ft_sfnt_os2);
+    if (os2 && os2->sCapHeight) {
+        f26dot6_t result = std::round(os2->sCapHeight * m_data->face->size->metrics.y_ppem * 64.0 / (double)m_data->face->units_per_EM);
         return result;
     }
 

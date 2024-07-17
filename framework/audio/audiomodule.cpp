@@ -51,6 +51,7 @@
 #include "internal/fx/musefxresolver.h"
 
 #include "diagnostics/idiagnosticspathsregister.h"
+#include "devtools/inputlag.h"
 
 #include "log.h"
 
@@ -85,6 +86,18 @@ using namespace muse::audio::fx;
 #include "internal/platform/web/webaudiodriver.h"
 #endif
 
+static void measureInputLag(const float* buf, const size_t size)
+{
+    if (INPUT_LAG_TIMER_STARTED) {
+        for (size_t i = 0; i < size; ++i) {
+            if (!RealIsNull(buf[i])) {
+                STOP_INPUT_LAG_TIMER;
+                return;
+            }
+        }
+    }
+}
+
 static void audio_init_qrc()
 {
     Q_INIT_RESOURCE(audio);
@@ -103,9 +116,10 @@ std::string AudioModule::moduleName() const
 void AudioModule::registerExports()
 {
     m_configuration = std::make_shared<AudioConfiguration>();
+    m_audioEngine = std::make_shared<AudioEngine>(iocContext());
     m_audioWorker = std::make_shared<AudioThread>();
     m_audioBuffer = std::make_shared<AudioBuffer>();
-    m_audioOutputController = std::make_shared<AudioOutputDeviceController>();
+    m_audioOutputController = std::make_shared<AudioOutputDeviceController>(iocContext());
     m_fxResolver = std::make_shared<FxResolver>();
     m_synthResolver = std::make_shared<SynthResolver>();
     m_playbackFacade = std::make_shared<Playback>(iocContext());
@@ -137,6 +151,7 @@ void AudioModule::registerExports()
 #endif // MUSE_MODULE_AUDIO_JACK
 
     ioc()->registerExport<IAudioConfiguration>(moduleName(), m_configuration);
+    ioc()->registerExport<IAudioEngine>(moduleName(), m_audioEngine);
     ioc()->registerExport<IAudioThreadSecurer>(moduleName(), std::make_shared<AudioThreadSecurer>());
     ioc()->registerExport<IAudioDriver>(moduleName(), m_audioDriver);
     ioc()->registerExport<IPlayback>(moduleName(), m_playbackFacade);
@@ -251,21 +266,28 @@ void AudioModule::onDestroy()
         m_audioWorker->stop([this]() {
             ONLY_AUDIO_WORKER_THREAD;
             m_playbackFacade->deinit();
-            AudioEngine::instance()->deinit();
+            m_audioEngine->deinit();
         });
     }
 }
 
 void AudioModule::setupAudioDriver(const IApplication::RunMode& mode)
 {
+    const bool shouldMeasureInputLag = m_configuration->shouldMeasureInputLag();
+
     IAudioDriver::Spec requiredSpec;
     requiredSpec.sampleRate = m_configuration->sampleRate();
     requiredSpec.format = IAudioDriver::Format::AudioF32;
     requiredSpec.channels = m_configuration->audioChannelsCount();
     requiredSpec.samples = m_configuration->driverBufferSize();
-    requiredSpec.callback = [this](void* /*userdata*/, uint8_t* stream, int byteCount) {
+    requiredSpec.callback = [this, shouldMeasureInputLag](void* /*userdata*/, uint8_t* stream, int byteCount) {
         auto samplesPerChannel = byteCount / (2 * sizeof(float));
-        m_audioBuffer->pop(reinterpret_cast<float*>(stream), samplesPerChannel);
+        float* dest = reinterpret_cast<float*>(stream);
+        m_audioBuffer->pop(dest, samplesPerChannel);
+
+        if (shouldMeasureInputLag) {
+            measureInputLag(dest, samplesPerChannel * m_audioBuffer->audioChannelCount());
+        }
     };
 
     if (mode == IApplication::RunMode::GuiApp) {
@@ -290,12 +312,12 @@ void AudioModule::setupAudioWorker(const IAudioDriver::Spec& activeSpec)
         ONLY_AUDIO_WORKER_THREAD;
 
         // Setup audio engine
-        AudioEngine::instance()->init(m_audioBuffer);
-        AudioEngine::instance()->setAudioChannelsCount(activeSpec.channels);
-        AudioEngine::instance()->setSampleRate(activeSpec.sampleRate);
-        AudioEngine::instance()->setReadBufferSize(activeSpec.samples);
+        m_audioEngine->init(m_audioBuffer);
+        m_audioEngine->setAudioChannelsCount(activeSpec.channels);
+        m_audioEngine->setSampleRate(activeSpec.sampleRate);
+        m_audioEngine->setReadBufferSize(activeSpec.samples);
 
-        auto fluidResolver = std::make_shared<FluidResolver>();
+        auto fluidResolver = std::make_shared<FluidResolver>(iocContext());
         m_synthResolver->registerResolver(AudioSourceType::Fluid, fluidResolver);
         m_synthResolver->init(m_configuration->defaultAudioInputParams());
 

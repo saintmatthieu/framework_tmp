@@ -27,14 +27,20 @@
 
 #include "../iaudioconfiguration.h"
 #include "../iaudiodriver.h"
+#include "worker/iaudioengine.h"
 
 namespace muse::audio {
-class AudioOutputDeviceController : public async::Asyncable
+class AudioOutputDeviceController : public Injectable, public async::Asyncable
 {
-    Inject<IAudioConfiguration> configuration;
-    Inject<IAudioDriver> audioDriver;
+    Inject<IAudioConfiguration> configuration = { this };
+    Inject<IAudioDriver> audioDriver = { this };
+    Inject<IAudioEngine> audioEngine = { this };
 
 public:
+
+    AudioOutputDeviceController(const modularity::ContextPtr& iocCtx)
+        : Injectable(iocCtx) {}
+
     void init();
 
 private:

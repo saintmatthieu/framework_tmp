@@ -37,6 +37,7 @@ struct MuseSamplerLibHandler
     ms_get_version_major getVersionMajor = nullptr;
     ms_get_version_minor getVersionMinor = nullptr;
     ms_get_version_revision getVersionRevision = nullptr;
+    ms_get_version_build_number getBuildNumber = nullptr;
     ms_get_version_string getVersionString = nullptr;
 
     ms_contains_instrument containsInstrument = nullptr;
@@ -101,6 +102,8 @@ struct MuseSamplerLibHandler
     ms_MuseSampler_process process = nullptr;
     ms_MuseSampler_all_notes_off allNotesOff = nullptr;
 
+    ms_reload_all_instruments reloadAllInstruments = nullptr;
+
 private:
     ms_init initLib = nullptr;
     ms_disable_reverb disableReverb = nullptr;
@@ -129,6 +132,7 @@ public:
         getVersionMajor = (ms_get_version_major)muse::getLibFunc(m_lib, "ms_get_version_major");
         getVersionMinor = (ms_get_version_minor)muse::getLibFunc(m_lib, "ms_get_version_minor");
         getVersionRevision = (ms_get_version_revision)muse::getLibFunc(m_lib, "ms_get_version_revision");
+        getBuildNumber = (ms_get_version_build_number)muse::getLibFunc(m_lib, "ms_get_version_build_number");
         getVersionString = (ms_get_version_string)muse::getLibFunc(m_lib, "ms_get_version_string");
 
         // Invalid...
@@ -258,6 +262,12 @@ public:
         setPlaying = (ms_MuseSampler_set_playing)muse::getLibFunc(m_lib, "ms_MuseSampler_set_playing");
         process = (ms_MuseSampler_process)muse::getLibFunc(m_lib, "ms_MuseSampler_process");
         allNotesOff = (ms_MuseSampler_all_notes_off)muse::getLibFunc(m_lib, "ms_MuseSampler_all_notes_off");
+
+        if (at_least_v_0_7) {
+            reloadAllInstruments = (ms_reload_all_instruments)muse::getLibFunc(m_lib, "ms_reload_all_instruments");
+        } else {
+            reloadAllInstruments = []() { return ms_Result_Error; };
+        }
     }
 
     ~MuseSamplerLibHandler()
@@ -298,6 +308,7 @@ public:
                && getVersionMajor
                && getVersionMinor
                && getVersionRevision
+               && getBuildNumber
                && getVersionString
                && containsInstrument
                && getMatchingInstrumentId
@@ -358,6 +369,7 @@ private:
                << "\n ms_get_version_major -" << reinterpret_cast<uint64_t>(getVersionMajor)
                << "\n ms_get_version_minor -" << reinterpret_cast<uint64_t>(getVersionMinor)
                << "\n ms_get_version_revision -" << reinterpret_cast<uint64_t>(getVersionRevision)
+               << "\n ms_get_version_build_number -" << reinterpret_cast<uint64_t>(getBuildNumber)
                << "\n ms_get_version_string -" << reinterpret_cast<uint64_t>(getVersionString)
                << "\n ms_contains_instrument -" << reinterpret_cast<uint64_t>(containsInstrument)
                << "\n ms_get_matching_instrument_id -" << reinterpret_cast<uint64_t>(getMatchingInstrumentId)

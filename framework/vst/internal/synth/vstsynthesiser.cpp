@@ -37,8 +37,9 @@ static const std::set<Steinberg::Vst::CtrlNumber> SUPPORTED_CONTROLLERS = {
     Steinberg::Vst::kPitchBend,
 };
 
-VstSynthesiser::VstSynthesiser(const TrackId trackId, const muse::audio::AudioInputParams& params)
-    : AbstractSynthesizer(params),
+VstSynthesiser::VstSynthesiser(const TrackId trackId, const muse::audio::AudioInputParams& params,
+                               const modularity::ContextPtr& iocCtx)
+    : AbstractSynthesizer(params, iocCtx),
     m_pluginPtr(std::make_shared<VstPlugin>(params.resourceMeta.id)),
     m_vstAudioClient(std::make_unique<VstAudioClient>()),
     m_trackId(trackId)
@@ -62,7 +63,7 @@ void VstSynthesiser::init()
     auto onPluginLoaded = [this]() {
         m_pluginPtr->updatePluginConfig(m_params.configuration);
         m_vstAudioClient->setBlockSize(m_samplesPerChannel);
-        m_sequencer.init(m_vstAudioClient->paramsMapping(SUPPORTED_CONTROLLERS));
+        m_sequencer.init(m_vstAudioClient->paramsMapping(SUPPORTED_CONTROLLERS), m_useDynamicEvents);
     };
 
     if (m_pluginPtr->isLoaded()) {
@@ -131,10 +132,9 @@ void VstSynthesiser::flushSound()
     revokePlayingNotes();
 }
 
-void VstSynthesiser::setupSound(const mpe::PlaybackSetupData& /*setupData*/)
+void VstSynthesiser::setupSound(const mpe::PlaybackSetupData& setupData)
 {
-    NOT_SUPPORTED;
-    return;
+    m_useDynamicEvents = setupData.supportsSingleNoteDynamics;
 }
 
 void VstSynthesiser::setupEvents(const mpe::PlaybackData& playbackData)

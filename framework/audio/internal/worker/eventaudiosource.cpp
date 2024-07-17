@@ -31,21 +31,23 @@ using namespace muse::audio;
 using namespace muse::audio::synth;
 using namespace muse::mpe;
 
-EventAudioSource::EventAudioSource(const TrackId trackId, const mpe::PlaybackData& playbackData,
-                                   OnOffStreamEventsReceived onOffStreamReceived)
-    : m_trackId(trackId), m_playbackData(playbackData)
+EventAudioSource::EventAudioSource(const TrackId trackId,
+                                   const mpe::PlaybackData& playbackData,
+                                   OnOffStreamEventsReceived onOffStreamReceived,
+                                   const modularity::ContextPtr& iocCtx)
+    : muse::Injectable(iocCtx), m_trackId(trackId), m_playbackData(playbackData)
 {
     ONLY_AUDIO_WORKER_THREAD;
 
-    m_playbackData.offStream.onReceive(this, [onOffStreamReceived, trackId](const PlaybackEventsMap&, const PlaybackParamMap&) {
+    m_playbackData.offStream.onReceive(this, [onOffStreamReceived, trackId](const PlaybackEventsMap&, const PlaybackParamList&) {
         onOffStreamReceived(trackId);
     });
 
-    m_playbackData.mainStream.onReceive(this, [this](const PlaybackEventsMap& events, const DynamicLevelMap& dynamics,
-                                                     const PlaybackParamMap& params) {
+    m_playbackData.mainStream.onReceive(this, [this](const PlaybackEventsMap& events, const DynamicLevelLayers& dynamics,
+                                                     const PlaybackParamLayers& params) {
         m_playbackData.originEvents = events;
-        m_playbackData.dynamicLevelMap = dynamics;
-        m_playbackData.paramMap = params;
+        m_playbackData.dynamics = dynamics;
+        m_playbackData.params = params;
     });
 }
 

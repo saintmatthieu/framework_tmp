@@ -31,7 +31,7 @@
 #include "modularity/ioc.h"
 #include "mpe/events.h"
 
-#include "internal/vstaudioclient.h"
+#include "../vstaudioclient.h"
 #include "ivstpluginsregister.h"
 #include "vstsequencer.h"
 #include "vsttypes.h"
@@ -39,11 +39,12 @@
 namespace muse::vst {
 class VstSynthesiser : public muse::audio::synth::AbstractSynthesizer
 {
-    INJECT(IVstPluginsRegister, pluginsRegister)
-    INJECT(muse::audio::IAudioConfiguration, config)
+    Inject<IVstPluginsRegister> pluginsRegister = { this };
+    Inject<muse::audio::IAudioConfiguration> config = { this };
 
 public:
-    explicit VstSynthesiser(const muse::audio::TrackId trackId, const muse::audio::AudioInputParams& params);
+    explicit VstSynthesiser(const muse::audio::TrackId trackId, const muse::audio::AudioInputParams& params,
+                            const modularity::ContextPtr& iocCtx);
     ~VstSynthesiser() override;
 
     void init();
@@ -84,6 +85,8 @@ private:
     VstSequencer m_sequencer;
 
     muse::audio::TrackId m_trackId = muse::audio::INVALID_TRACK_ID;
+
+    bool m_useDynamicEvents = false;
 };
 
 using VstSynthPtr = std::shared_ptr<VstSynthesiser>;
