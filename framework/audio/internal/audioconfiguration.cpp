@@ -154,7 +154,7 @@ async::Notification AudioConfiguration::driverBufferSizeChanged() const
 
 msecs_t AudioConfiguration::audioWorkerInterval(const samples_t samples, const sample_rate_t sampleRate) const
 {
-    msecs_t interval = float(samples) / 2.f / float(sampleRate) * 1000.f;
+    msecs_t interval = float(samples) / 4.f / float(sampleRate) * 1000.f;
     interval = std::max(interval, msecs_t(1));
 
     return interval;
@@ -232,11 +232,6 @@ void AudioConfiguration::setUserSoundFontDirectories(const io::paths_t& paths)
 async::Channel<io::paths_t> AudioConfiguration::soundFontDirectoriesChanged() const
 {
     return m_soundFontDirsChanged;
-}
-
-io::path_t AudioConfiguration::knownAudioPluginsFilePath() const
-{
-    return globalConfiguration()->userAppDataPath() + "/known_audio_plugins.json";
 }
 
 bool AudioConfiguration::shouldMeasureInputLag() const
