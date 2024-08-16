@@ -39,6 +39,8 @@ class ExtApi : public QObject
     Q_PROPERTY(QJSValue interactive READ interactive CONSTANT)
     Q_PROPERTY(QJSValue theme READ theme CONSTANT)
 
+    Q_PROPERTY(QJSValue engraving READ engraving CONSTANT)
+
     //! NOTE Providing these APIs requires approval
     //Q_PROPERTY(QJSValue shortcuts READ shortcuts CONSTANT)
     //Q_PROPERTY(QJSValue navigation READ navigation CONSTANT)
@@ -56,11 +58,14 @@ class ExtApi : public QObject
 
 public:
     ExtApi(muse::api::IApiEngine* engine, QObject* parent);
+    ~ExtApi();
 
     QJSValue log() const { return api("api.log"); }
     QJSValue context() const { return api("api.context"); }
     QJSValue interactive() const { return api("api.interactive"); }
     QJSValue theme() const { return api("api.theme"); }
+
+    QJSValue engraving() const { return api("api.engraving.v1"); }
 
     QJSValue dispatcher() const { return api("api.dispatcher"); }
     QJSValue navigation() const { return api("api.navigation"); }
@@ -74,6 +79,7 @@ private:
     struct Api
     {
         muse::api::ApiObject* obj = nullptr;
+        bool isNeedDelete = false;
         QJSValue jsval;
     };
 
