@@ -41,7 +41,7 @@ public:
     ExtensionsProvider(const modularity::ContextPtr& iocCtx)
         : Injectable(iocCtx) {}
 
-    void reloadPlugins() override;
+    void reloadExtensions() override;
 
     ManifestList manifestList(Filter filter = Filter::All) const override;
     async::Notification manifestListChanged() const override;

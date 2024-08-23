@@ -37,7 +37,7 @@ public:
 
     virtual ~IExtensionsProvider() = default;
 
-    virtual void reloadPlugins() = 0;
+    virtual void reloadExtensions() = 0;
 
     virtual ManifestList manifestList(Filter filter = Filter::All) const = 0;
     virtual async::Notification manifestListChanged() const = 0;
