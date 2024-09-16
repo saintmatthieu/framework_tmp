@@ -34,7 +34,6 @@ elseif(CC_IS_MSVC)
     set(CMAKE_C_FLAGS_DEBUG             "/MT /Zi /Ob0 /Od /RTC1")
     set(CMAKE_C_FLAGS_RELEASE           "/MT /O2 /Ob2")
     set(CMAKE_C_FLAGS_RELWITHDEBINFO    "/MT /Zi /O2 /Ob1")
-    set(CMAKE_EXE_LINKER_FLAGS          "/DYNAMICBASE:NO")
 
     add_definitions(-DWIN32)
     add_definitions(-D_WINDOWS)
@@ -74,7 +73,7 @@ elseif(CC_IS_CLANG)
         link_libraries("-fsanitize=address")
     endif()
 
-    # On MacOS with clang there are problems with debugging
+    # On macOS with clang there are problems with debugging
     # - the value of the std::u16string is not visible.
     if (BUILD_IS_DEBUG AND MUSE_COMPILE_STRING_DEBUG_HACK)
         add_definitions(-DMUSE_STRING_DEBUG_HACK)
@@ -125,21 +124,6 @@ endif()
 
 # APPLE specific
 if (OS_IS_MAC)
-    if (MUE_COMPILE_QT5_COMPAT)
-        if (MUSE_COMPILE_MACOS_APPLE_SILICON)
-            set(CMAKE_OSX_ARCHITECTURES ) # leave empty, use default
-        else()
-            set(CMAKE_OSX_ARCHITECTURES x86_64)
-        endif()
-
-        if (CMAKE_OSX_ARCHITECTURES)
-            message(STATUS "Building for architecture(s) ${CMAKE_OSX_ARCHITECTURES}")
-        else()
-            message(STATUS "Building for default architecture(s)")
-        endif()
-    endif() #MUE_COMPILE_QT5_COMPAT
-
     set(MACOSX_DEPLOYMENT_TARGET 10.14)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif(OS_IS_MAC)
-

@@ -2,7 +2,7 @@
 include(GetUtilsFunctions) # library of CMake functions ("fn__" namespace)
 
 # Print Qt version or fail the build if Qt (qmake) is not in PATH.
-fn__require_program(QMAKE Qt --version "https://musescore.org/en/handbook/developers-handbook/compilation" qmake)
+fn__require_program(QMAKE Qt --version "https://musescore.org/en/handbook/developers-handbook/compilation" qmake6 qmake)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -43,6 +43,13 @@ if (OS_IS_LIN)
     set(_components
         ${_components}
         DBus
+    )
+endif()
+
+if (QT_ADD_WEBSOCKET)
+    set(_components
+        ${_components}
+        WebSockets
     )
 endif()
 
