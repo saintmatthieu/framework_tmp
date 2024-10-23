@@ -1,11 +1,11 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-only
- * MuseScore-CLA-applies
+ * MuseScore-Studio-CLA-applies
  *
- * MuseScore
+ * MuseScore Studio
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2021 MuseScore Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,25 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+#include "allzerosfilecorruptor.h"
 
-StyledListView {
-    id: root
+using namespace muse::io;
 
-    property alias radioButtonGroup: buttonGroup
+AllZerosFileCorruptor::AllZerosFileCorruptor(const path_t& filePath)
+    : File(filePath)
+{
+}
 
-    implicitHeight: Math.max(1, contentItem.childrenRect.height)
-    implicitWidth: contentWidth
-
-    spacing: 4
-
-    opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
-    orientation: ListView.Horizontal
-    interactive: false
-    clip: false
-
-    ButtonGroup {
-        id: buttonGroup
-    }
+size_t AllZerosFileCorruptor::writeData(const uint8_t*, size_t len)
+{
+    // Ignore the actual data and write all zeros so as to corrupt the file.
+    uint8_t* corruptData = new uint8_t[len];
+    memset(corruptData, 0, len);
+    return File::writeData(corruptData, len);
 }

@@ -21,37 +21,36 @@
  */
 #pragma once
 
-#include <cmath>
+#include <QAbstractListModel>
 
-#include "number.h"
+#include "modularity/ioc.h"
+#include "../iextensionsprovider.h"
+#include "ui/iuiactionsregister.h"
+#include "uicomponents/view/abstracttoolbarmodel.h"
+#include "actions/iactionsdispatcher.h"
 
-namespace muse {
-inline float db_to_linear(float v)
+namespace muse::extensions {
+class ExtensionsToolBarModel : public uicomponents::AbstractToolBarModel
 {
-    return std::pow(10.0, v / 20.0);
-}
+    Q_OBJECT
 
-inline float linear_to_db(float v)
-{
-    return 20.0 * std::log10(std::abs(v));
-}
+    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY isEmptyChanged FINAL)
 
-//! NOTE Just linear ratio
-using ratio_t = number_t<float>;
+    Inject<IExtensionsProvider> extensionsProvider = { this };
+    Inject<ui::IUiActionsRegister> actionsRegister = { this };
+    Inject<actions::IActionsDispatcher> dispatcher = { this };
 
-//! NOTE logarithmic ratio (decibel)
-using db_t = number_t<float>;
+public:
 
-inline ratio_t db_to_linear(db_t v)
-{
-    return muse::db_to_linear(v.raw());
-}
+    Q_INVOKABLE void load() override;
 
-inline db_t linear_to_db(ratio_t v)
-{
-    return muse::linear_to_db(v.raw());
-}
+    bool isEmpty() const;
 
-//! NOTE Percent
-using percent_t = number_t<float>;
+signals:
+    void isEmptyChanged();
+
+private:
+
+    bool m_isEmpty = true;
+};
 }

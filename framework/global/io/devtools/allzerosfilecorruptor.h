@@ -1,11 +1,11 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-only
- * MuseScore-CLA-applies
+ * MuseScore-Studio-CLA-applies
  *
- * MuseScore
+ * MuseScore Studio
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2021 MuseScore Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,25 +19,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+#pragma once
 
-StyledListView {
-    id: root
+#include "io/file.h"
 
-    property alias radioButtonGroup: buttonGroup
+namespace muse::io {
+class AllZerosFileCorruptor : public File
+{
+public:
+    AllZerosFileCorruptor(const path_t& filePath);
 
-    implicitHeight: Math.max(1, contentItem.childrenRect.height)
-    implicitWidth: contentWidth
-
-    spacing: 4
-
-    opacity: root.enabled ? 1.0 : ui.theme.itemOpacityDisabled
-    orientation: ListView.Horizontal
-    interactive: false
-    clip: false
-
-    ButtonGroup {
-        id: buttonGroup
-    }
+private:
+    size_t writeData(const uint8_t* data, size_t len) override;
+};
 }
