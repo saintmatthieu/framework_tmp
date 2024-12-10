@@ -4,7 +4,7 @@
 # MuseScore
 # Music Composition & Notation
 #
-# Copyright (C) 2024 MuseScore BVBA and others
+# Copyright (C) 2021 MuseScore BVBA and others
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -18,28 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-declare_module(harfbuzz)
-set(MODULE_DIR ${CMAKE_CURRENT_LIST_DIR}/harfbuzz)
+set(MODULE_TEST muse_uicomponents_tests)
 
-set(MODULE_SRC
-    ${MODULE_DIR}/src/harfbuzz.cc
-)
+set(MODULE_TEST_SRC
+    ${CMAKE_CURRENT_LIST_DIR}/doubleinputvalidator_tests.cpp
+    )
 
-set(MODULE_INCLUDE
-    ${FREETYPE_INCLUDE_DIRS}
-)
+set(MODULE_TEST_LINK
+    muse_uicomponents
+    )
 
-set(MODULE_DEF
-    -DHAVE_FREETYPE
-)
-
-set(MODULE_LINK_GLOBAL OFF)
-set(MODULE_USE_PCH OFF)
-set(MODULE_USE_UNITY OFF)
-set(MODULE_USE_COVERAGE OFF)
-
-setup_module()
-
-# target_no_warning(${MODULE} -Wimplicit-fallthrough=0)
-# target_no_warning(${MODULE} -Wno-conversion)
-# target_no_warning(${MODULE} -Wno-cast-function-type)
+include(SetupGTest)
