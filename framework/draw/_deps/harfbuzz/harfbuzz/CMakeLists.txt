@@ -33,9 +33,11 @@ set(MODULE_DEF
     -DHAVE_FREETYPE
 )
 
-set(MODULE_NOT_LINK_GLOBAL ON)
-set(MODULE_PCH_DISABLED ON)
-set(MODULE_UNITY_DISABLED ON)
+set(MODULE_LINK_GLOBAL OFF)
+set(MODULE_USE_PCH OFF)
+set(MODULE_USE_UNITY OFF)
+set(MODULE_USE_COVERAGE OFF)
+
 setup_module()
 
 # target_no_warning(${MODULE} -Wimplicit-fallthrough=0)

@@ -42,7 +42,7 @@ declare_muse_module_opt(MPE ON)
 declare_muse_module_opt(MULTIINSTANCES ON)
 
 declare_muse_module_opt(MUSESAMPLER ON)
-option(MUSE_MODULE_MUSESAMPLER_ENABLE_DEBUG "Enable musesampler debug support" OFF)
+option(MUSE_MODULE_MUSESAMPLER_LOAD_IN_DEBUG "Load MuseSampler module in debug builds" OFF)
 
 declare_muse_module_opt(NETWORK ON)
 option(MUSE_MODULE_NETWORK_WEBSOCKET "Enable websocket support" OFF)
@@ -68,6 +68,7 @@ option(MUSE_COMPILE_STRING_DEBUG_HACK "Enable string debug hack (only clang)" ON
 
 # === Tests ===
 option(MUSE_ENABLE_UNIT_TESTS "Build framework unit tests" ON)
+option(MUSE_ENABLE_UNIT_TESTS_CODE_COVERAGE "Enable code coverage for unit tests" OFF)
 
 # === Tools ===
 option(MUSE_ENABLE_CUSTOM_ALLOCATOR "Enable custom allocator" OFF)
