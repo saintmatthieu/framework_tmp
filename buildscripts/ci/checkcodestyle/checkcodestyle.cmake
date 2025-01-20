@@ -12,7 +12,12 @@ set(UNTIDY_FILE ".untidy")
 
 execute_process(
     COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/run_scan.sh ${SCAN_BIN} ${UNCRUSTIFY_BIN} ${CONFIG} ${UNTIDY_FILE} ${SCAN_DIR}
+    RESULT_VARIABLE SCAN_RESULT
 )
+
+if (NOT SCAN_RESULT EQUAL 0)
+    message(FATAL_ERROR "Scan failed, please check log for details")
+endif()
 
 execute_process(
     COMMAND git diff --name-only
@@ -50,7 +55,6 @@ if (GIT_DIFF_OUT)
         OUTPUT_VARIABLE GIT_DIFF_OUT
     )
 
-    message(${GIT_DIFF_OUT})
-
+    message(FATAL_ERROR "${GIT_DIFF_OUT}")
 endif()
 
