@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "run",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/install/bin/app.exe",
+            "preLaunchTask": "CMake: install",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+        }
+    ]
+}

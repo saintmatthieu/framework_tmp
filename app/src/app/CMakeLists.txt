@@ -61,9 +61,7 @@ if (MUSE_MODULE_ACCESSIBILITY)
     list(APPEND LINK_LIB muse::accessibility)
 endif()
 
-if (MU_BUILD_ACTIONS_MODULE)
-    list(APPEND LINK_LIB muse::actions)
-endif()
+list(APPEND LINK_LIB muse::actions)
 
 if (MU_BUILD_EXTENSIONS_MODULE)
     list(APPEND LINK_LIB muse::extensions)
@@ -77,9 +75,7 @@ if (MU_BUILD_MIDI_MODULE)
     list(APPEND LINK_LIB muse::midi)
 endif()
 
-if (MU_BUILD_MULTIINSTANCES_MODULE)
-    list(APPEND LINK_LIB muse::multiinstances)
-endif()
+list(APPEND LINK_LIB muse::multiinstances)
 
 if (MU_BUILD_NETWORK_MODULE)
     list(APPEND LINK_LIB muse::network)
@@ -94,9 +90,9 @@ if (MU_BUILD_UI_MODULE)
     list(APPEND LINK_LIB muse::uicomponents)
 endif()
 
-if (MU_BUILD_WORKSPACE_MODULE)
-    list(APPEND LINK_LIB muse::workspace)
-endif()
+list(APPEND LINK_LIB muse::workspace)
+
+list(APPEND LINK_LIB context)
 
 # ...
 
@@ -150,7 +146,20 @@ endif(CC_IS_MSVC)
 ###########################################
 # Link
 ###########################################
-target_link_libraries(app ${LINK_LIB} )
+target_link_libraries(app PRIVATE
+    ${LINK_LIB}
+    ${QT_LIBRARIES}
+)
+
+qt_add_qml_module(app
+    URI app
+    VERSION 1.0
+    QML_FILES qml/Main.qml
+)
+
+qt_add_resources(RESOURCES qml/resources.qrc)
+
+target_sources(app PRIVATE ${RESOURCES})
 
 ###########################################
 # INSTALL
@@ -191,7 +200,7 @@ if (OS_IS_WIN)
 
     if (MUE_COMPILE_QT5_COMPAT)
         install(FILES
-                ${PROJECT_SOURCE_DIR}/build/qt.conf
+                # ${PROJECT_SOURCE_DIR}/build/qt.conf
                 ${QtInstallLibraries}
                 ${QT_INSTALL_BINS}/libEGL.dll
                 ${QT_INSTALL_BINS}/libGLESv2.dll
@@ -202,7 +211,7 @@ if (OS_IS_WIN)
                 DESTINATION bin)
     else()
         install(FILES
-                ${PROJECT_SOURCE_DIR}/build/qt.conf
+                # ${PROJECT_SOURCE_DIR}/build/qt.conf
                 ${QtInstallLibraries}
                 #${QT_INSTALL_BINS}/libEGL.dll
                 #${QT_INSTALL_BINS}/libGLESv2.dll

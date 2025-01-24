@@ -1,0 +1,11 @@
+{
+    "cmake.sourceDirectory": "C:/Users/saint/git/github/musescore/framework_tmp/app",
+    "cmake.configureArgs": [
+        "-DMU_BUILD_APPSHELL_MODULE=ON",
+        "-DMUSE_ENABLE_UNIT_TESTS=OFF",
+        "-DMU_BUILD_UI_MODULE=ON",
+        "-DMUSE_MODULE_AUDIO=OFF",
+        "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/build/install"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}

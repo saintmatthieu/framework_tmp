@@ -28,13 +28,9 @@
 
 #include "log.h"
 
-#ifdef MU_BUILD_ACCESSIBILITY_MODULE
 #include "accessibility/accessibilitymodule.h"
-#endif
 
-#ifdef MU_BUILD_ACTIONS_MODULE
 #include "actions/actionsmodule.h"
-#endif
 
 #ifdef MU_BUILD_EXTENSIONS_MODULE
 #include "extensions/extensionsmodule.h"
@@ -48,9 +44,7 @@
 #include "midi/midimodule.h"
 #endif
 
-#ifdef MU_BUILD_MULTIINSTANCES_MODULE
 #include "multiinstances/multiinstancesmodule.h"
-#endif
 
 #ifdef MU_BUILD_NETWORK_MODULE
 #include "network/networkmodule.h"
@@ -60,18 +54,11 @@
 #include "shortcuts/shortcutsmodule.h"
 #endif
 
-#ifdef MU_BUILD_UI_MODULE
 #include "ui/uimodule.h"
 #include "uicomponents/uicomponentsmodule.h"
-#endif
+#include "context/contextmodule.h"
 
-#ifdef MU_BUILD_WORKSPACE_MODULE
 #include "workspace/workspacemodule.h"
-#endif
-
-#ifdef MU_BUILD_APPSHELL_MODULE
-#include "appshell/appshellmodule.h"
-#endif
 
 #if (defined (_MSCVER) || defined (_MSC_VER))
 #include <vector>
@@ -120,13 +107,8 @@ int main(int argc, char** argv)
     //app.addModule(new mu::diagnostics::DiagnosticsModule());
 
     // framework
-#ifdef MU_BUILD_ACCESSIBILITY_MODULE
-    app.addModule(new mu::accessibility::AccessibilityModule());
-#endif
+    app.addModule(new muse::accessibility::AccessibilityModule());
 
-#ifdef MU_BUILD_ACTIONS_MODULE
-    app.addModule(new mu::actions::ActionsModule());
-#endif
 
 #ifdef MU_BUILD_EXTENSIONS_MODULE
     app.addModule(new mu::extensions::ExtensionsModule());
@@ -140,9 +122,7 @@ int main(int argc, char** argv)
     app.addModule(new mu::midi::MidiModule());
 #endif
 
-#ifdef MU_BUILD_MULTIINSTANCES_MODULE
-    app.addModule(new mu::mi::MultiInstancesModule());
-#endif
+    app.addModule(new muse::mi::MultiInstancesModule());
 
 #ifdef MU_BUILD_NETWORK_MODULE
     app.addModule(new mu::network::NetworkModule());
@@ -152,19 +132,11 @@ int main(int argc, char** argv)
     app.addModule(new mu::shortcuts::ShortcutsModule());
 #endif
 
-#ifdef MU_BUILD_UI_MODULE
-    app.addModule(new mu::ui::UiModule());
-    app.addModule(new mu::uicomponents::UiComponentsModule());
-#endif
-
-#ifdef MU_BUILD_WORKSPACE_MODULE
-    app.addModule(new mu::workspace::WorkspaceModule());
-#endif
-
-    // modules
-#ifdef MU_BUILD_APPSHELL_MODULE
-    app.addModule(new au::appshell::AppShellModule());
-#endif
+    app.addModule(new muse::workspace::WorkspaceModule());
+    app.addModule(new muse::actions::ActionsModule());
+    app.addModule(new muse::ui::UiModule());
+    app.addModule(new muse::uicomponents::UiComponentsModule());
+    app.addModule(new au::context::ContextModule());
 
 #if (defined (_MSCVER) || defined (_MSC_VER))
     // On MSVC under Windows, we need to manually retrieve the command-line arguments and convert them from UTF-16 to UTF-8.

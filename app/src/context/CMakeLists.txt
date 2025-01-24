@@ -18,9 +18,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# App (main)
-add_subdirectory(app)
-add_subdirectory(context)
+# This module stores global state
+declare_module(context)
 
+set(MODULE_SRC
+    ${CMAKE_CURRENT_LIST_DIR}/contextmodule.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/contextmodule.h
+    )
 
-# ...
+setup_module()

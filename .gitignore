@@ -5,7 +5,6 @@
 .qped
 .directory
 .idea
-.vscode/
 /builds
 /build_overrides.cmake
 build.release
@@ -71,3 +70,5 @@ temp_*
 *.local.cmake
 
 */_deps/*
+
+build

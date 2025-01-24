@@ -34,7 +34,7 @@
 //#include "appshell/view/dockwindow/docksetup.h"
 
 #include "modularity/ioc.h"
-//#include "ui/internal/uiengine.h"
+#include "ui/iuiengine.h"
 
 #include "global/globalmodule.h"
 #include "global/internal/baseapplication.h"
@@ -169,34 +169,6 @@ int App::run(int argc, char** argv)
         m->onPreInit(runMode);
     }
 
-#ifdef MU_BUILD_APPSHELL_MODULE
-    au::appshell::SplashScreen* splashScreen = nullptr;
-    if (runMode == muse::IApplication::RunMode::GuiApp) {
-        //splashScreen = new SplashScreen(SplashScreen::Default);
-
-        // if (multiInstancesProvider()->isMainInstance()) {
-        //     splashScreen = new SplashScreen(SplashScreen::Default);
-        // } else {
-        //     const project::ProjectFile& file = startupScenario()->startupScoreFile();
-        //     if (file.isValid()) {
-        //         if (file.hasDisplayName()) {
-        //             splashScreen = new SplashScreen(SplashScreen::ForNewInstance, false, file.displayName(true /* includingExtension */));
-        //         } else {
-        //             splashScreen = new SplashScreen(SplashScreen::ForNewInstance, false);
-        //         }
-        //     } else if (startupScenario()->isStartWithNewFileAsSecondaryInstance()) {
-        //         splashScreen = new SplashScreen(SplashScreen::ForNewInstance, true);
-        //     } else {
-        //         splashScreen = new SplashScreen(SplashScreen::Default);
-        //     }
-        // }
-    }
-
-    if (splashScreen) {
-        splashScreen->show();
-    }
-#endif
-
     // ====================================================
     // Setup modules: onInit
     // ====================================================
@@ -226,6 +198,8 @@ int App::run(int argc, char** argv)
     // ====================================================
     // Run
     // ====================================================
+
+    QQmlApplicationEngine* engine = nullptr;
 
     switch (runMode) {
     case muse::IApplication::RunMode::ConsoleApp: {
@@ -260,31 +234,25 @@ int App::run(int argc, char** argv)
         // }
     } break;
     case muse::IApplication::RunMode::GuiApp: {
-#ifdef MU_BUILD_APPSHELL_MODULE
         // ====================================================
         // Setup Qml Engine
         // ====================================================
-        QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+        engine = muse::modularity::_ioc()->resolve<muse::ui::IUiEngine>("app")->qmlAppEngine();
+        engine->addImportPath("C:/Users/saint/git/github/musescore/framework_tmp/framework/uicomponents/api");
+        engine->addImportPath("C:/Users/saint/git/github/musescore/framework_tmp/framework/uicomponents/qml");
+        engine->addImportPath("C:/Users/saint/git/github/musescore/framework_tmp/framework/ui/qml");
 
-        muse::dock::DockSetup::setup(engine);
+        const auto qmlImportPaths = engine->importPathList();
+        std::vector<std::string> asString;
+        asString.reserve(qmlImportPaths.size());
+        for (const QString& s : qmlImportPaths) {
+            asString.push_back(s.toStdString());
+        }
 
-#if defined(Q_OS_WIN)
-        const QString mainQmlFile = "/platform/win/Main.qml";
-#elif defined(Q_OS_MACOS)
-        const QString mainQmlFile = "/platform/mac/Main.qml";
-#elif defined(Q_OS_LINUX) || defined(Q_OS_FREEBSD)
-        const QString mainQmlFile = "/platform/linux/Main.qml";
-#elif defined(Q_OS_WASM)
-        const QString mainQmlFile = "/Main.wasm.qml";
-#endif
-
-        //! NOTE Move ownership to UiEngine
-        muse::ui::UiEngine::instance()->moveQQmlEngine(engine);
-
-        const QUrl url(QStringLiteral("qrc:/qml") + mainQmlFile);
+        const QUrl url(QStringLiteral("qrc:/Main.qml"));
 
         QObject::connect(engine, &QQmlApplicationEngine::objectCreated,
-                         app, [this, url, splashScreen](QObject* obj, const QUrl& objUrl) {
+                         app, [this, url](QObject* obj, const QUrl& objUrl) {
                 if (!obj && url == objUrl) {
                     LOGE() << "failed Qml load\n";
                     QCoreApplication::exit(-1);
@@ -300,13 +268,6 @@ int App::run(int argc, char** argv)
                     for (muse::modularity::IModuleSetup* m : m_modules) {
                         m->onDelayedInit();
                     }
-
-                    if (splashScreen) {
-                        splashScreen->close();
-                        delete splashScreen;
-                    }
-
-                    startupScenario()->run();
                 }
             }, Qt::QueuedConnection);
 
@@ -325,7 +286,6 @@ int App::run(int argc, char** argv)
         QQuickWindow::setDefaultAlphaBuffer(true);
 
         engine->load(url);
-#endif // MUE_BUILD_APPSHELL_MODULE
     } break;
     case muse::IApplication::RunMode::AudioPluginRegistration: {
         // CommandLineParser::AudioPluginRegistration pluginRegistration = commandLineParser.audioPluginRegistration();
@@ -357,10 +317,11 @@ int App::run(int argc, char** argv)
     }
 #endif
 
-#ifdef MU_BUILD_APPSHELL_MODULE
     // Engine quit
-    muse::ui::UiEngine::instance()->quit();
-#endif
+    if (engine) {
+        engine->quit();
+        engine->deleteLater();
+    }
 
     // Deinit
 
