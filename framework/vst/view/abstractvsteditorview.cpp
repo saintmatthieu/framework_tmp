@@ -28,7 +28,6 @@
 #include <QScreen>
 
 #include "vsttypes.h"
-#include "internal/vstplugin.h"
 
 #include "async/async.h"
 #include "log.h"
@@ -107,9 +106,18 @@ tresult AbstractVstEditorView::resizeView(IPlugView* view, ViewRect* newSize)
     return kResultTrue;
 }
 
+IVstPluginInstancePtr AbstractVstEditorView::getInstance() const
+{
+    if (m_instanceId > 0) {
+        return instancesRegister()->instanceById(m_instanceId);
+    } else {
+        return determineInstance();
+    }
+}
+
 void AbstractVstEditorView::wrapPluginView()
 {
-    m_pluginPtr = getPluginPtr();
+    m_pluginPtr = getInstance();
 
     if (!m_pluginPtr) {
         return;
@@ -124,13 +132,13 @@ void AbstractVstEditorView::wrapPluginView()
     }
 }
 
-void AbstractVstEditorView::attachView(VstPluginPtr pluginPtr)
+void AbstractVstEditorView::attachView(IVstPluginInstancePtr instance)
 {
-    if (!pluginPtr) {
+    if (!instance) {
         return;
     }
 
-    m_view = pluginPtr->createView();
+    m_view = instance->createView();
     if (!m_view) {
         return;
     }
@@ -269,4 +277,18 @@ void AbstractVstEditorView::setResourceId(const QString& newResourceId)
     if (isAbleToWrapPlugin()) {
         wrapPluginView();
     }
+}
+
+int AbstractVstEditorView::instanceId() const
+{
+    return m_instanceId;
+}
+
+void AbstractVstEditorView::setInstanceId(int newInstanceId)
+{
+    if (m_instanceId == newInstanceId) {
+        return;
+    }
+    m_instanceId = newInstanceId;
+    emit instanceIdChanged();
 }

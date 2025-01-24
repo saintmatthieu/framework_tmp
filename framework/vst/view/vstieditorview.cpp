@@ -34,7 +34,7 @@ bool VstiEditorView::isAbleToWrapPlugin() const
     return trackId() != -1 && !resourceId().isEmpty();
 }
 
-VstPluginPtr VstiEditorView::getPluginPtr() const
+IVstPluginInstancePtr VstiEditorView::determineInstance() const
 {
-    return pluginsRegister()->instrumentPlugin(trackId(), resourceId().toStdString());
+    return instancesRegister()->instrumentPlugin(resourceId().toStdString(), trackId());
 }

@@ -35,7 +35,7 @@ public:
 
 private:
     bool isAbleToWrapPlugin() const override;
-    VstPluginPtr getPluginPtr() const override;
+    IVstPluginInstancePtr determineInstance() const override;
 };
 }
 
