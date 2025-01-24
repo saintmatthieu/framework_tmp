@@ -70,4 +70,4 @@ temp_*
 
 *.local.cmake
 
-*/_deps/*
+**/_deps/*
