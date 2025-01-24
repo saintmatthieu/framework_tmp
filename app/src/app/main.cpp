@@ -20,6 +20,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef QT_QML_DEBUG
+#include <QQmlDebuggingEnabler>
+#endif
+
 #include <QTextCodec>
 
 #include <csignal>

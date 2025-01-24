@@ -7,5 +7,6 @@
         "-DMUSE_MODULE_AUDIO=OFF",
         "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/build/install"
     ],
+    "cmake.generator": "Visual Studio 17 2022",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

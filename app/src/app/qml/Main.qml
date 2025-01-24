@@ -10,6 +10,10 @@ ApplicationWindow {
     width: 640
     height: 480
     title: qsTr("UI test app")
+    onHeightChanged: {
+        // Set a breakpoint here.
+        console.log("Hey!")
+    }
 
     FlatButton {
         text: "I'm a FlatButton"

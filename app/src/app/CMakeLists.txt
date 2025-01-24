@@ -161,6 +161,8 @@ qt_add_resources(RESOURCES qml/resources.qrc)
 
 target_sources(app PRIVATE ${RESOURCES})
 
+target_compile_definitions(app PRIVATE QT_QML_DEBUG)
+
 ###########################################
 # INSTALL
 ###########################################
@@ -322,21 +324,14 @@ if (MSVC)
    set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
    set(CMAKE_SKIP_PACKAGE_ALL_DEPENDENCY true)
 
-   # Set the startup project to "mscore".
-   if (NOT ${CMAKE_VERSION} VERSION_LESS "3.6.0")
-      set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT mscore)
-   endif ()
+   # Enable QML debugging
+   set_property(TARGET ${EXECUTABLE_NAME} PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS --qmljsdebugger=port:3768,block)
 
    # Set the debugging properties for the "mscore" project.
    file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}/bin" VS_DEBUGGER_WORKING_DIRECTORY)
-   if (NOT ${CMAKE_VERSION} VERSION_LESS "3.12.0")
-      set_target_properties(${EXECUTABLE_NAME} PROPERTIES VS_DEBUGGER_COMMAND "${VS_DEBUGGER_WORKING_DIRECTORY}\\${MUSESCORE_EXECUTABLE_NAME}${CMAKE_EXECUTABLE_SUFFIX}")
-   endif ()
-   if (NOT ${CMAKE_VERSION} VERSION_LESS "3.8.0")
-      set_target_properties(${EXECUTABLE_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${VS_DEBUGGER_WORKING_DIRECTORY}")
-   endif ()
-   if (NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
-      set_target_properties(${EXECUTABLE_NAME} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--debug")
-   endif ()
+
+   # Set as startup project
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${EXECUTABLE_NAME})
+
 
 endif (MSVC)
