@@ -151,10 +151,16 @@ target_link_libraries(app PRIVATE
     ${QT_LIBRARIES}
 )
 
+file(GLOB_RECURSE QML_ABS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/qml/*.qml)
+foreach(QML_FILE ${QML_ABS_FILES})
+    file(RELATIVE_PATH QML_FILE_REL ${CMAKE_CURRENT_SOURCE_DIR} ${QML_FILE})
+    list(APPEND QML_FILES ${QML_FILE_REL})
+endforeach()
+
 qt_add_qml_module(app
     URI app
     VERSION 1.0
-    QML_FILES qml/Main.qml
+    QML_FILES ${QML_FILES}
 )
 
 qt_add_resources(RESOURCES qml/resources.qrc)
