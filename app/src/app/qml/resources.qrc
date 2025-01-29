@@ -1,6 +1,10 @@
 <RCC>
   <qresource prefix="/">
     <file>Main.qml</file>
+    <file>DragTile.qml</file>
+    <file>DropTile.qml</file>
+    <file>EffectPanel.qml</file>
+    <file>MyListModel.qml</file>
     <file>configs/learn.cfg</file>
     <file>configs/light.cfg</file>
     <file>configs/dark.cfg</file>
