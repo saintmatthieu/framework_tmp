@@ -5,7 +5,7 @@
  * MuseScore
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2025 MuseScore BVBA and others
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -20,21 +20,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "vstieditorview.h"
+#pragma once
 
-using namespace muse::vst;
+#include "types/string.h"
+#include "types/uri.h"
 
-VstiEditorView::VstiEditorView(QWidget* parent)
-    : AbstractVstEditorView(parent)
+namespace muse::tours {
+struct TourStep
 {
-}
+    String title;
+    String description;
+    String videoExplanationUrl;
 
-bool VstiEditorView::isAbleToWrapPlugin() const
-{
-    return trackId() != -1 && !resourceId().isEmpty();
-}
+    Uri controlUri;
+};
 
-IVstPluginInstancePtr VstiEditorView::determineInstance() const
+using TourStepList = std::vector<TourStep>;
+
+struct Tour
 {
-    return instancesRegister()->instrumentPlugin(resourceId().toStdString(), trackId());
+    String id;
+    TourStepList steps;
+
+    bool operator==(const Tour& other) const
+    {
+        return id == other.id;
+    }
+};
 }

@@ -5,7 +5,7 @@
  * MuseScore
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2025 MuseScore BVBA and others
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -20,25 +20,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MUSE_VST_VSTIEDITORVIEW_H
-#define MUSE_VST_VSTIEDITORVIEW_H
+#pragma once
 
-#include "abstractvsteditorview.h"
+#include "io/path.h"
 
-namespace muse::vst {
-class VstiEditorView : public AbstractVstEditorView
+#include "modularity/ioc.h"
+#include "iglobalconfiguration.h"
+
+#include "tourstypes.h"
+
+#include "itoursconfiguration.h"
+
+namespace muse::tours {
+class ToursConfiguration : public IToursConfiguration, public Injectable
 {
-    Q_OBJECT
+    Inject<IGlobalConfiguration> globalConfiguration = { this };
 
 public:
-    explicit VstiEditorView(QWidget* parent = nullptr);
+    ToursConfiguration(const modularity::ContextPtr& iocCtx)
+        : Injectable(iocCtx) {}
+
+    String lastShownTourIdForEvent(const String& eventCode) const override;
+    void setLastShownTourIdForEvent(const String& eventCode, const String& tourId) override;
+
+    io::path_t toursFilePath() const override;
 
 private:
-    bool isAbleToWrapPlugin() const override;
-    IVstPluginInstancePtr determineInstance() const override;
+    StringList lastShownTours() const;
 };
 }
-
-Q_DECLARE_METATYPE(muse::vst::VstiEditorView)
-
-#endif // MUSE_VST_VSTIEDITORVIEW_H
