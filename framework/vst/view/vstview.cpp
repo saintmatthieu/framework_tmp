@@ -23,6 +23,14 @@
 
 #include <QQuickWindow>
 
+#ifdef Q_OS_LINUX
+#define USE_LINUX_RUNLOOP
+#endif
+
+#ifdef USE_LINUX_RUNLOOP
+#include "../internal/platform/linux/runloop.h"
+#endif
+
 #include "log.h"
 
 using namespace muse::vst;
@@ -40,7 +48,22 @@ using namespace muse::vst;
     return __funknownRefCount;
 }
 
-IMPLEMENT_QUERYINTERFACE(VstView, IPlugFrame, IPlugFrame::iid)
+Steinberg::tresult VstView::queryInterface(const ::Steinberg::TUID _iid, void** obj)
+{
+    QUERY_INTERFACE(_iid, obj, Steinberg::FUnknown::iid, Steinberg::IPlugFrame);
+    QUERY_INTERFACE(_iid, obj, Steinberg::IPlugFrame::iid, Steinberg::IPlugFrame);
+    //As VST3 documentation states, IPlugFrame also has to provide
+    //reference to the Steinberg::Linux::IRunLoop implementation.
+#ifdef USE_LINUX_RUNLOOP
+    if (m_runLoop && Steinberg::FUnknownPrivate::iidEqual(_iid, Steinberg::Linux::IRunLoop::iid)) {
+        m_runLoop->addRef();
+        *obj = static_cast<Steinberg::Linux::IRunLoop*>(m_runLoop);
+        return ::Steinberg::kResultOk;
+    }
+#endif
+    *obj = nullptr;
+    return ::Steinberg::kNoInterface;
+}
 
 static FIDString currentPlatformUiType()
 {
@@ -58,10 +81,17 @@ static FIDString currentPlatformUiType()
 VstView::VstView(QQuickItem* parent)
     : QQuickItem(parent)
 {
+    FUNKNOWN_CTOR; // IPlugFrame
+
+#ifdef USE_LINUX_RUNLOOP
+    m_runLoop = new RunLoop();
+#endif
 }
 
 VstView::~VstView()
 {
+    FUNKNOWN_DTOR; // IPlugFrame
+
     deinit();
 }
 
@@ -72,7 +102,7 @@ void VstView::init()
         return;
     }
 
-    m_title = "[quick] " + QString::fromStdString(m_instance->name());
+    m_title = QString::fromStdString(m_instance->name());
     emit titleChanged();
 
     m_view = m_instance->createView();
@@ -118,6 +148,13 @@ void VstView::deinit()
         delete m_window;
         m_window = nullptr;
     }
+
+#ifdef USE_LINUX_RUNLOOP
+    if (m_runLoop) {
+        m_runLoop->stop();
+        delete m_runLoop;
+    }
+#endif
 
     if (m_instance) {
         m_instance->refreshConfig();
