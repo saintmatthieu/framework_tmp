@@ -5,7 +5,7 @@ endif()
 
 set(SCAN_DIR ${CMAKE_ARGV3})
 
-set(UNCRUSTIFY_BIN ${CMAKE_CURRENT_LIST_DIR}/tools/linux/uncrustify_073)
+set(UNCRUSTIFY_BIN ${CMAKE_CURRENT_LIST_DIR}/tools/linux/uncrustify_074)
 set(SCAN_BIN ${CMAKE_CURRENT_LIST_DIR}/tools/linux/scan_files)
 set(CONFIG ${CMAKE_CURRENT_LIST_DIR}/uncrustify_muse.cfg)
 set(UNTIDY_FILE ".untidy")

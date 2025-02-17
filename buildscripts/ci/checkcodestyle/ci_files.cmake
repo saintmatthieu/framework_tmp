@@ -7,5 +7,5 @@ set(CI_FILES
 
 set(CI_EXEC_FILES
     tools/linux/scan_files
-    tools/linux/uncrustify_073
+    tools/linux/uncrustify_074
 )
