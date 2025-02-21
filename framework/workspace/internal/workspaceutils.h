@@ -5,7 +5,7 @@
  * MuseScore
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2025 MuseScore BVBA and others
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,11 +19,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MUSE_WORKSPACE_WORKSPACETYPES_H
-#define MUSE_WORKSPACE_WORKSPACETYPES_H
+
+#pragma once
+
+#include "../iworkspace.h"
 
 namespace muse::workspace {
-using DataKey = const char*;
+class WorkspaceUtils
+{
+public:
+    static bool workspaceLessThan(const IWorkspacePtr& workspace1, const IWorkspacePtr& workspace2);
+};
 }
-
-#endif // MUSE_WORKSPACE_WORKSPACETYPES_H

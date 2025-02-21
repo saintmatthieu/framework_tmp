@@ -1,11 +1,11 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-only
- * MuseScore-CLA-applies
+ * MuseScore-Studio-CLA-applies
  *
- * MuseScore
+ * MuseScore Studio
  * Music Composition & Notation
  *
- * Copyright (C) 2021 MuseScore BVBA and others
+ * Copyright (C) 2025 MuseScore Limited
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -19,11 +19,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef MUSE_WORKSPACE_WORKSPACETYPES_H
-#define MUSE_WORKSPACE_WORKSPACETYPES_H
+
+#pragma once
+
+#include "modularity/ioc.h"
+#include "ui/iuiactionsregister.h"
+#include "workspace/iworkspacemanager.h"
+
+#include "uicomponents/view/abstractmenumodel.h"
 
 namespace muse::workspace {
-using DataKey = const char*;
-}
+class WorkspacesMenuModel : public uicomponents::AbstractMenuModel
+{
+    Q_OBJECT
 
-#endif // MUSE_WORKSPACE_WORKSPACETYPES_H
+    Inject<ui::IUiActionsRegister> uiActionsRegister = { this };
+    Inject<IWorkspaceManager> workspacesManager = { this };
+
+public:
+    explicit WorkspacesMenuModel(QObject* parent = nullptr);
+
+    Q_INVOKABLE void load() override;
+};
+}
