@@ -33,7 +33,7 @@ set(EXECUTABLE_NAME app)
 include(GetPlatformInfo)
 
 if(OS_IS_MAC)
-    set(EXECUTABLE_NAME audacity MACOSX_BUNDLE)
+    set(EXECUTABLE_NAME app MACOSX_BUNDLE)
     set(MACOSX_BUNDLE_ICON_FILE AppIcon.icns)
     set(MACOSX_BUNDLE_GUI_IDENTIFIER org.musescore.${MUSESCORE_NAME})
     set(MACOSX_BUNDLE_BUNDLE_NAME ${MUSESCORE_NAME})
@@ -127,7 +127,7 @@ if (MSCORE_OUTPUT_NAME)
 endif (MSCORE_OUTPUT_NAME)
 
 if (OS_IS_MAC)
-    set_target_properties(audacity PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/../cmake-proxies/cmake-modules/MacOSXBundleInfo.plist.in
+    set_target_properties(app PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/../cmake-proxies/cmake-modules/MacOSXBundleInfo.plist.in
                                             XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER ${MACOSX_BUNDLE_GUI_IDENTIFIER})
 endif (OS_IS_MAC)
 
@@ -297,7 +297,7 @@ elseif(OS_IS_FBSD)
 ###########################################
 elseif(OS_IS_MAC)
 
-    install(TARGETS audacity BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(TARGETS app BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
     if(MU_COMPILE_INSTALL_QTQML_FILES)
         install(DIRECTORY
