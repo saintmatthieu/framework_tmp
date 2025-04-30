@@ -134,25 +134,8 @@ void VstView::init()
     });
 
     connect(window(), &QWindow::widthChanged, this, [this](int) {
-        m_widthChanged = true;
-        QTimer::singleShot(0, this, [this] {
-            if (m_widthChanged && m_xChanged) {
-                updateScreenMetrics();
-                updateViewGeometry();
-            }
-            m_widthChanged = m_xChanged = false;
-        });
-    });
-
-    connect(window(), &QWindow::xChanged, this, [this](int) {
-        m_xChanged = true;
-        QTimer::singleShot(0, this, [this] {
-            if (m_widthChanged && m_xChanged) {
-                updateScreenMetrics();
-                updateViewGeometry();
-            }
-            m_widthChanged = m_xChanged = false;
-        });
+        updateScreenMetrics();
+        updateViewGeometry();
     });
 
     updateViewGeometry();

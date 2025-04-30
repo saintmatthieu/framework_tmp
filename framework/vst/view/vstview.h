@@ -77,8 +77,5 @@ private:
     PluginViewPtr m_view;
     QString m_title;
     RunLoop* m_runLoop = nullptr;
-
-    bool m_widthChanged = false;
-    bool m_xChanged = false;
 };
 }
