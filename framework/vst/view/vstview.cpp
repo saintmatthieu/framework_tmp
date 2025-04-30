@@ -234,7 +234,14 @@ void VstView::updateViewGeometry()
     Steinberg::ViewRect size;
     m_view->getSize(&size);
 
-    resizeView(m_view, &size);
+    #ifdef Q_OS_MAC
+    const auto doResize = m_view->checkSizeConstraint(&size) == Steinberg::kResultTrue;
+    #else
+    constexpr auto doResize = true;
+    #endif
+    if (doResize) {
+        resizeView(m_view, &size);
+    }
 }
 
 int VstView::instanceId() const
