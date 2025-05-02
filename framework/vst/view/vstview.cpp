@@ -95,6 +95,7 @@ VstView::~VstView()
     deinit();
 }
 
+#ifdef Q_OS_WIN
 #include <windows.h>
 
 namespace {
@@ -124,6 +125,7 @@ double getScaleFactorForWindow(HWND h)
     return 1.0;
 }
 }
+#endif
 
 void VstView::init()
 {
@@ -172,6 +174,7 @@ void VstView::init()
 
     m_window->show();
 
+#ifdef Q_OS_WIN
     // Every second, log the devicePixelRatio and availableSize of the screen
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this]() {
@@ -190,6 +193,7 @@ void VstView::init()
         }
     });
     timer->start(3000);
+#endif
 }
 
 void VstView::deinit()
