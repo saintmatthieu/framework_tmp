@@ -649,6 +649,7 @@ static const auto& mappingByCategory(const mpe::SoundCategory category)
 
         { { mpe::SoundId::Conga,  {} }, { midi::Program(128, 48) } },
         { { mpe::SoundId::Cuica,  {} }, { midi::Program(128, 0) } },
+        { { mpe::SoundId::Cajon,  {} }, { midi::Program(128, 40) } },
 
         { { mpe::SoundId::Drumset,  {} }, { midi::Program(128, 0) } },
         { { mpe::SoundId::Drumset,  { mpe::SoundSubCategory::FourPiece } }, { midi::Program(128, 0) } },
@@ -719,7 +720,7 @@ static const auto& mappingByCategory(const mpe::SoundCategory category)
         { { mpe::SoundId::Guiro,  { mpe::SoundSubCategory::Wooden } }, { midi::Program(128, 0) } },
 
         { { mpe::SoundId::Block,  { mpe::SoundSubCategory::Wooden,
-                                    mpe::SoundSubCategory::Temple } }, { midi::Program(128, 0) } },
+                                    mpe::SoundSubCategory::Temple } }, { midi::Program(1, 115) } },
         { { mpe::SoundId::Block,  { mpe::SoundSubCategory::Wooden } }, { midi::Program(128, 0) } },
         { { mpe::SoundId::Block,  { mpe::SoundSubCategory::Sandpaper } }, { midi::Program(128, 0) } },
 
@@ -734,6 +735,7 @@ static const auto& mappingByCategory(const mpe::SoundCategory category)
         { { mpe::SoundId::Tubo,  {} }, { midi::Program(128, 48) } },
         { { mpe::SoundId::Vibraslap,  {} }, { midi::Program(128, 0) } },
         { { mpe::SoundId::Whip,  {} }, { midi::Program(128, 56) } },
+        { { mpe::SoundId::Cannon,  {} }, { midi::Program(0, 127) } },
 
         { { mpe::SoundId::Drum,  { mpe::SoundSubCategory::Marching,
                                    mpe::SoundSubCategory::Snare } }, { midi::Program(128, 56) } },
