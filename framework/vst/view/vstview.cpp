@@ -95,38 +95,6 @@ VstView::~VstView()
     deinit();
 }
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-
-namespace {
-void* getUser32Function(const char* functionName)
-{
-    HMODULE module = GetModuleHandleA("user32.dll");
-
-    if (module != nullptr) {
-        return (void*)GetProcAddress(module, functionName);
-    }
-
-    assert(false);
-    return nullptr;
-}
-
-using GetDPIForWindowFunc                      = UINT(WINAPI*) (HWND);
-double getScaleFactorForWindow(HWND h)
-{
-    // NB. Using a local function here because we need to call this method from the plug-in wrappers
-    // which don't load the DPI-awareness functions on startup
-    static auto localGetDPIForWindow = (GetDPIForWindowFunc)getUser32Function("GetDpiForWindow");
-
-    if (localGetDPIForWindow != nullptr) {
-        return (double)localGetDPIForWindow(h) / USER_DEFAULT_SCREEN_DPI;
-    }
-
-    return 1.0;
-}
-}
-#endif
-
 void VstView::init()
 {
     m_instance = instancesRegister()->instanceById(m_instanceId);
@@ -146,11 +114,11 @@ void VstView::init()
         return;
     }
 
+    updateScreenMetrics();
+
     m_view->setFrame(this);
 
     m_window = new QWindow(window());
-
-    updateScreenMetrics();
 
     Steinberg::tresult attached;
     attached = m_view->attached(reinterpret_cast<void*>(m_window->winId()), currentPlatformUiType());
@@ -160,40 +128,16 @@ void VstView::init()
         return;
     }
 
-    // connect(mainWindow()->qWindow(), &QWindow::widthChanged, this, [this](int width) {
-    //     updateScreenMetrics();
-    //     updateViewGeometry();
-    // });
-
-    // connect(window(), &QWindow::widthChanged, this, [this](int) {
-    //     updateScreenMetrics();
-    //     updateViewGeometry();
-    // });
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this]() {
+        updateScreenMetrics();
+        updateViewGeometry();
+    });
+    timer->start(3000);
 
     updateViewGeometry();
 
     m_window->show();
-
-#ifdef Q_OS_WIN
-    // Every second, log the devicePixelRatio and availableSize of the screen
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this]() {
-        Steinberg::ViewRect size;
-        m_view->getSize(&size);
-        const QScreen* screen = window()->screen();
-        const auto ppd = screen->devicePixelRatio();
-        const auto winWidthDt = window()->size().width();
-        const auto viewWidthDt = size.getWidth() / ppd;
-        const auto estimatedScale = (float)getScaleFactorForWindow(reinterpret_cast<HWND>(m_window->winId()));
-        LOGI() << "ppd:" << ppd << ", estimatedScale:" << estimatedScale << ", winWidthDt:" << winWidthDt << ", viewWidthDt:" << viewWidthDt;
-        if (estimatedScale != ppd) {
-            LOGI() << "Matt: fixing inconsistent scale factor";
-            updateScreenMetrics();
-            updateViewGeometry();
-        }
-    });
-    timer->start(3000);
-#endif
 }
 
 void VstView::deinit()
@@ -221,38 +165,35 @@ void VstView::deinit()
     }
 }
 
-Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::ViewRect* requiredSizePx)
+Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::ViewRect* requiredSize)
 {
     IF_ASSERT_FAILED(m_window) {
         return Steinberg::kResultFalse;
     }
 
-    view->checkSizeConstraint(requiredSizePx);
+    view->checkSizeConstraint(requiredSize);
 
-    const int newWidthPx = requiredSizePx->getWidth();
-    const int newHeightPx = requiredSizePx->getHeight();
-
-    // pixels per dots
-    const auto ppd = m_screenMetrics.devicePixelRatio;
+    int newWidth = requiredSize->getWidth();
+    int newHeight = requiredSize->getHeight();
 
 //! NOTE: newSize already includes the UI scaling on Windows, so we have to remove it before setting the fixed size.
 //! Otherwise, the user will get an extremely large window and won't be able to resize it
 #ifndef Q_OS_MAC
-    int newWidthDt = newWidthPx / ppd;
-    int newHeightDt = newHeightPx / ppd;
+    newWidth = newWidth / m_screenMetrics.devicePixelRatio;
+    newHeight = newHeight / m_screenMetrics.devicePixelRatio;
 #endif
 
-    newWidthDt = std::min(newWidthDt, m_screenMetrics.availableSize.width());
-    newHeightDt = std::min(newHeightDt, m_screenMetrics.availableSize.height());
+    newWidth = std::min(newWidth, m_screenMetrics.availableSize.width());
+    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height());
 
-    setImplicitHeight(newHeightDt);
-    setImplicitWidth(newWidthDt);
+    setImplicitHeight(newHeight);
+    setImplicitWidth(newWidth);
 
     m_window->setGeometry(this->x(), this->y(), this->implicitWidth(), this->implicitHeight());
-    Steinberg::ViewRect vstSizePx;
-    vstSizePx.right = m_window->width() * ppd;
-    vstSizePx.bottom = m_window->height() * ppd;
-    view->onSize(&vstSizePx);
+    Steinberg::ViewRect vstSize;
+    vstSize.right = m_window->width() * m_screenMetrics.devicePixelRatio;
+    vstSize.bottom = m_window->height() * m_screenMetrics.devicePixelRatio;
+    view->onSize(&vstSize);
 
     return Steinberg::kResultTrue;
 }
@@ -262,7 +203,6 @@ void VstView::updateScreenMetrics()
     QScreen* screen = window()->screen();
     m_screenMetrics.availableSize = screen->availableSize();
     m_screenMetrics.devicePixelRatio = screen->devicePixelRatio();
-    // m_screenMetrics.devicePixelRatio = getScaleFactorForWindow(reinterpret_cast<HWND>(window()->winId()));
 }
 
 void VstView::updateViewGeometry()
@@ -274,14 +214,7 @@ void VstView::updateViewGeometry()
     Steinberg::ViewRect size;
     m_view->getSize(&size);
 
-    #ifdef Q_OS_MAC
-    const auto doResize = m_view->checkSizeConstraint(&size) == Steinberg::kResultTrue;
-    #else
-    constexpr auto doResize = true;
-    #endif
-    if (doResize) {
-        resizeView(m_view, &size);
-    }
+    resizeView(m_view, &size);
 }
 
 int VstView::instanceId() const

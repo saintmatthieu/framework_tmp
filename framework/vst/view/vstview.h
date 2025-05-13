@@ -24,7 +24,6 @@
 #include <QQuickItem>
 
 #include "global/modularity/ioc.h"
-#include "ui/imainwindow.h"
 #include "../ivstinstancesregister.h"
 
 namespace muse::vst {
@@ -36,7 +35,6 @@ class VstView : public QQuickItem, public Steinberg::IPlugFrame
     Q_PROPERTY(QString title READ title NOTIFY titleChanged FINAL)
 
     muse::Inject<IVstInstancesRegister> instancesRegister;
-    muse::Inject<muse::ui::IMainWindow> mainWindow;
 
     DECLARE_FUNKNOWN_METHODS
 
