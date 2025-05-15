@@ -115,6 +115,7 @@ void VstView::init()
     }
 
     updateScreenMetrics();
+    m_lastScreenMetrics = m_screenMetrics;
 
     m_view->setFrame(this);
 
@@ -128,12 +129,17 @@ void VstView::init()
         return;
     }
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this]() {
+    // Do not rely on `QWindow::screenChanged` signal, which often does not get emitted though it should.
+    // Proactively check for screen resolution changes instead.
+    connect(&m_screenMetricsTimer, &QTimer::timeout, this, [this]() {
         updateScreenMetrics();
+        if (m_lastScreenMetrics == m_screenMetrics) {
+            return;
+        }
+        m_lastScreenMetrics = m_screenMetrics;
         updateViewGeometry();
     });
-    timer->start(3000);
+    m_screenMetricsTimer.start(std::chrono::milliseconds { 100 });
 
     updateViewGeometry();
 
@@ -200,9 +206,14 @@ Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::Vi
 
 void VstView::updateScreenMetrics()
 {
-    QScreen* screen = window()->screen();
+    const QScreen* const screen = window()->screen();
     m_screenMetrics.availableSize = screen->availableSize();
-    m_screenMetrics.devicePixelRatio = screen->devicePixelRatio();
+#ifdef Q_OS_MAC
+    constexpr auto devicePixelRatio = 1.0;
+#else
+    const auto devicePixelRatio = screen->devicePixelRatio();
+#endif
+    m_screenMetrics.devicePixelRatio = devicePixelRatio;
 }
 
 void VstView::updateViewGeometry()

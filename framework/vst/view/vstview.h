@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QQuickItem>
+#include <QTimer>
 
 #include "global/modularity/ioc.h"
 #include "../ivstinstancesregister.h"
@@ -63,6 +64,17 @@ private:
     struct ScreenMetrics {
         QSize availableSize;
         double devicePixelRatio = 0.0;
+        bool operator==(const ScreenMetrics& other) const
+        {
+            return availableSize == other.availableSize && devicePixelRatio == other.devicePixelRatio;
+        }
+
+        ScreenMetrics& operator=(const ScreenMetrics& other)
+        {
+            availableSize = other.availableSize;
+            devicePixelRatio = other.devicePixelRatio;
+            return *this;
+        }
     };
 
     void updateScreenMetrics();
@@ -71,9 +83,12 @@ private:
     int m_instanceId = -1;
     IVstPluginInstancePtr m_instance;
     QWindow* m_window = nullptr;
-    ScreenMetrics m_screenMetrics;
     PluginViewPtr m_view;
     QString m_title;
     RunLoop* m_runLoop = nullptr;
+
+    ScreenMetrics m_screenMetrics;
+    ScreenMetrics m_lastScreenMetrics;
+    QTimer m_screenMetricsTimer;
 };
 }
