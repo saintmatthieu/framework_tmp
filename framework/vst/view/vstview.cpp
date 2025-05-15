@@ -122,7 +122,6 @@ void VstView::init()
     }
 
     updateScreenMetrics();
-    m_lastScreenMetrics = m_screenMetrics;
 
     m_view->setFrame(this);
 
@@ -138,21 +137,15 @@ void VstView::init()
 
     // Do not rely on `QWindow::screenChanged` signal, which often does not get emitted though it should.
     // Proactively check for screen resolution changes instead.
+    // Note: optmization attempts only to call `updateViewGeometry` if screen metrics or vst view size changed
+    // seem to miss out on relevant changes for some plugins.
     connect(&m_screenMetricsTimer, &QTimer::timeout, this, [this]() {
         updateScreenMetrics();
-        Steinberg::ViewRect newSize;
-        m_view->getSize(&newSize);
-        if (m_lastScreenMetrics == m_screenMetrics && m_lastVstViewSize == newSize) {
-            return;
-        }
-        m_lastScreenMetrics = m_screenMetrics;
-        m_lastVstViewSize = newSize;
         updateViewGeometry();
     });
     m_screenMetricsTimer.start(std::chrono::milliseconds { 100 });
 
     updateViewGeometry();
-    m_view->getSize(&m_lastVstViewSize);
 
     m_window->show();
 }
