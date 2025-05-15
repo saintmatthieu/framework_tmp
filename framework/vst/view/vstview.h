@@ -89,6 +89,7 @@ private:
 
     ScreenMetrics m_screenMetrics;
     ScreenMetrics m_lastScreenMetrics;
+    Steinberg::ViewRect m_lastVstViewSize;
     QTimer m_screenMetricsTimer;
 };
 }

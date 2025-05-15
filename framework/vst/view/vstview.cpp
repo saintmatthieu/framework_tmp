@@ -95,6 +95,13 @@ VstView::~VstView()
     deinit();
 }
 
+namespace {
+constexpr bool operator==(const Steinberg::ViewRect& lhs, const Steinberg::ViewRect& rhs)
+{
+    return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom;
+}
+}
+
 void VstView::init()
 {
     m_instance = instancesRegister()->instanceById(m_instanceId);
@@ -133,15 +140,19 @@ void VstView::init()
     // Proactively check for screen resolution changes instead.
     connect(&m_screenMetricsTimer, &QTimer::timeout, this, [this]() {
         updateScreenMetrics();
-        if (m_lastScreenMetrics == m_screenMetrics) {
+        Steinberg::ViewRect newSize;
+        m_view->getSize(&newSize);
+        if (m_lastScreenMetrics == m_screenMetrics && m_lastVstViewSize == newSize) {
             return;
         }
         m_lastScreenMetrics = m_screenMetrics;
+        m_lastVstViewSize = newSize;
         updateViewGeometry();
     });
     m_screenMetricsTimer.start(std::chrono::milliseconds { 100 });
 
     updateViewGeometry();
+    m_view->getSize(&m_lastVstViewSize);
 
     m_window->show();
 }
