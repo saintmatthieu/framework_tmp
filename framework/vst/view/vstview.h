@@ -34,6 +34,8 @@ class VstView : public QQuickItem, public Steinberg::IPlugFrame
     Q_OBJECT
     Q_PROPERTY(int instanceId READ instanceId WRITE setInstanceId NOTIFY instanceIdChanged FINAL)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged FINAL)
+    Q_PROPERTY(int headerHeight READ headerHeight WRITE setHeaderHeight NOTIFY headerHeightChanged FINAL)
+    Q_PROPERTY(int footerHeight READ footerHeight WRITE setFooterHeight NOTIFY footerHeightChanged FINAL)
 
     muse::Inject<IVstInstancesRegister> instancesRegister;
 
@@ -55,9 +57,16 @@ public:
 
     QString title() const;
 
+    int headerHeight() const;
+    void setHeaderHeight(int newHeaderHeight);
+    int footerHeight() const;
+    void setFooterHeight(int newFooterHeight);
+
 signals:
     void instanceIdChanged();
     void titleChanged();
+    void headerHeightChanged();
+    void footerHeightChanged();
 
 private:
 
@@ -89,5 +98,8 @@ private:
 
     ScreenMetrics m_screenMetrics;
     QTimer m_screenMetricsTimer;
+
+    int m_headerHeight = 0;
+    int m_footerHeight = 0;
 };
 }

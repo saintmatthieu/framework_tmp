@@ -194,7 +194,7 @@ Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::Vi
 #endif
 
     newWidth = std::min(newWidth, m_screenMetrics.availableSize.width());
-    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height());
+    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height() - m_headerHeight - m_footerHeight);
 
     setImplicitHeight(newHeight);
     setImplicitWidth(newWidth);
@@ -249,4 +249,32 @@ void VstView::setInstanceId(int newInstanceId)
 QString VstView::title() const
 {
     return m_title;
+}
+
+int VstView::headerHeight() const
+{
+    return m_headerHeight;
+}
+
+void VstView::setHeaderHeight(int newHeaderHeight)
+{
+    if (m_headerHeight == newHeaderHeight) {
+        return;
+    }
+    m_headerHeight = newHeaderHeight;
+    emit headerHeightChanged();
+}
+
+int VstView::footerHeight() const
+{
+    return m_footerHeight;
+}
+
+void VstView::setFooterHeight(int newFooterHeight)
+{
+    if (m_footerHeight == newFooterHeight) {
+        return;
+    }
+    m_footerHeight = newFooterHeight;
+    emit footerHeightChanged();
 }
