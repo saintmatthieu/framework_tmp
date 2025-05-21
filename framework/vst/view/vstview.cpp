@@ -125,10 +125,10 @@ void VstView::init()
 
     m_view->setFrame(this);
 
-    m_window = new QWindow(window());
+    m_vstWindow = new QWindow(window());
 
     Steinberg::tresult attached;
-    attached = m_view->attached(reinterpret_cast<void*>(m_window->winId()), currentPlatformUiType());
+    attached = m_view->attached(reinterpret_cast<void*>(m_vstWindow->winId()), currentPlatformUiType());
     if (attached != Steinberg::kResultOk) {
         LOGE() << "Unable to attach vst plugin view to window"
                << ", instance name: " << m_instance->name();
@@ -147,7 +147,7 @@ void VstView::init()
 
     updateViewGeometry();
 
-    m_window->show();
+    m_vstWindow->show();
 }
 
 void VstView::deinit()
@@ -157,9 +157,9 @@ void VstView::deinit()
         m_view->removed();
         m_view = nullptr;
 
-        m_window->hide();
-        delete m_window;
-        m_window = nullptr;
+        m_vstWindow->hide();
+        delete m_vstWindow;
+        m_vstWindow = nullptr;
     }
 
 #ifdef USE_LINUX_RUNLOOP
@@ -177,7 +177,7 @@ void VstView::deinit()
 
 Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::ViewRect* requiredSize)
 {
-    IF_ASSERT_FAILED(m_window) {
+    IF_ASSERT_FAILED(m_vstWindow) {
         return Steinberg::kResultFalse;
     }
 
@@ -193,19 +193,36 @@ Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::Vi
     newHeight = newHeight / m_screenMetrics.devicePixelRatio;
 #endif
 
-    newWidth = std::min(newWidth, m_screenMetrics.availableSize.width());
-    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height() - m_headerHeight - m_footerHeight);
+    const int titleBarHeight = window()->frameGeometry().height() - window()->geometry().height();
+
+    newWidth = std::min(newWidth, m_screenMetrics.availableSize.width() - 2 * m_sidePadding);
+    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height() - titleBarHeight - m_topPadding - m_bottomPadding);
 
     setImplicitHeight(newHeight);
     setImplicitWidth(newWidth);
 
-    m_window->setGeometry(this->x(), this->y(), this->implicitWidth(), this->implicitHeight());
-    Steinberg::ViewRect vstSize;
-    vstSize.right = m_window->width() * m_screenMetrics.devicePixelRatio;
-    vstSize.bottom = m_window->height() * m_screenMetrics.devicePixelRatio;
-    view->onSize(&vstSize);
+    m_vstWindow->setGeometry(m_sidePadding, m_topPadding, this->implicitWidth(), this->implicitHeight());
+
+    setVstSize(*view, newWidth, newHeight);
 
     return Steinberg::kResultTrue;
+}
+
+void VstView::setVstSize(Steinberg::IPlugView& view, int width, int height)
+{
+    const auto dpi = m_screenMetrics.devicePixelRatio;
+    Steinberg::ViewRect vstSize;
+    vstSize.right = width * dpi;
+    vstSize.bottom = height * dpi;
+    view.onSize(&vstSize);
+}
+
+QSize VstView::vstSize(Steinberg::IPlugView&) const
+{
+    Steinberg::ViewRect size;
+    m_view->getSize(&size);
+    const auto dpi = m_screenMetrics.devicePixelRatio;
+    return QSize(size.getWidth() / dpi, size.getHeight() / dpi);
 }
 
 void VstView::updateScreenMetrics()
@@ -251,30 +268,44 @@ QString VstView::title() const
     return m_title;
 }
 
-int VstView::headerHeight() const
+int VstView::sidePadding() const
 {
-    return m_headerHeight;
+    return m_sidePadding;
 }
 
-void VstView::setHeaderHeight(int newHeaderHeight)
+void VstView::setsidePadding(int sidePadding)
 {
-    if (m_headerHeight == newHeaderHeight) {
+    if (m_sidePadding == sidePadding) {
         return;
     }
-    m_headerHeight = newHeaderHeight;
-    emit headerHeightChanged();
+    m_sidePadding = sidePadding;
+    emit sidePaddingChanged();
 }
 
-int VstView::footerHeight() const
+int VstView::topPadding() const
 {
-    return m_footerHeight;
+    return m_topPadding;
 }
 
-void VstView::setFooterHeight(int newFooterHeight)
+void VstView::setTopPadding(int topPadding)
 {
-    if (m_footerHeight == newFooterHeight) {
+    if (m_topPadding == topPadding) {
         return;
     }
-    m_footerHeight = newFooterHeight;
-    emit footerHeightChanged();
+    m_topPadding = topPadding;
+    emit topPaddingChanged();
+}
+
+int VstView::bottomPadding() const
+{
+    return m_bottomPadding;
+}
+
+void VstView::setBottomPadding(int bottomPadding)
+{
+    if (m_bottomPadding == bottomPadding) {
+        return;
+    }
+    m_bottomPadding = bottomPadding;
+    emit bottomPaddingChanged();
 }
