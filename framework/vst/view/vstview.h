@@ -102,6 +102,7 @@ private:
     QString m_title;
     RunLoop* m_runLoop = nullptr;
 
+    QScreen* m_currentScreen = nullptr;
     ScreenMetrics m_screenMetrics;
     QTimer m_screenMetricsTimer;
 

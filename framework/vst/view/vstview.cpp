@@ -140,8 +140,11 @@ void VstView::init()
     // Note: optmization attempts only to call `updateViewGeometry` if screen metrics or vst view size changed
     // seem to miss out on relevant changes for some plugins.
     connect(&m_screenMetricsTimer, &QTimer::timeout, this, [this]() {
-        updateScreenMetrics();
-        updateViewGeometry();
+        QScreen* screen = window()->screen();
+        if (m_currentScreen != screen) {
+            updateScreenMetrics();
+            updateViewGeometry();
+        }
     });
     m_screenMetricsTimer.start(std::chrono::milliseconds { 100 });
 
@@ -227,12 +230,12 @@ QSize VstView::vstSize(Steinberg::IPlugView&) const
 
 void VstView::updateScreenMetrics()
 {
-    const QScreen* const screen = window()->screen();
-    m_screenMetrics.availableSize = screen->availableSize();
+    m_currentScreen = window()->screen();
+    m_screenMetrics.availableSize = m_currentScreen->availableSize();
 #ifdef Q_OS_MAC
     constexpr auto devicePixelRatio = 1.0;
 #else
-    const auto devicePixelRatio = screen->devicePixelRatio();
+    const auto devicePixelRatio = m_currentScreen->devicePixelRatio();
 #endif
     m_screenMetrics.devicePixelRatio = devicePixelRatio;
 }
