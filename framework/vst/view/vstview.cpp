@@ -95,13 +95,6 @@ VstView::~VstView()
     deinit();
 }
 
-namespace {
-constexpr bool operator==(const Steinberg::ViewRect& lhs, const Steinberg::ViewRect& rhs)
-{
-    return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom;
-}
-}
-
 void VstView::init()
 {
     m_instance = instancesRegister()->instanceById(m_instanceId);
@@ -137,11 +130,10 @@ void VstView::init()
 
     // Do not rely on `QWindow::screenChanged` signal, which often does not get emitted though it should.
     // Proactively check for screen resolution changes instead.
-    // Note: optmization attempts only to call `updateViewGeometry` if screen metrics or vst view size changed
-    // seem to miss out on relevant changes for some plugins.
     connect(&m_screenMetricsTimer, &QTimer::timeout, this, [this]() {
-        QScreen* screen = window()->screen();
-        if (m_currentScreen != screen) {
+        const QScreen* const screen = window()->screen();
+        if (m_currentScreen != screen || m_screenMetrics.availableSize != screen->availableSize()
+            || m_screenMetrics.devicePixelRatio != screen->devicePixelRatio()) {
             updateScreenMetrics();
             updateViewGeometry();
         }
@@ -186,46 +178,33 @@ Steinberg::tresult VstView::resizeView(Steinberg::IPlugView* view, Steinberg::Vi
 
     view->checkSizeConstraint(requiredSize);
 
-    int newWidth = requiredSize->getWidth();
-    int newHeight = requiredSize->getHeight();
-
-//! NOTE: newSize already includes the UI scaling on Windows, so we have to remove it before setting the fixed size.
-//! Otherwise, the user will get an extremely large window and won't be able to resize it
-#ifndef Q_OS_MAC
-    newWidth = newWidth / m_screenMetrics.devicePixelRatio;
-    newHeight = newHeight / m_screenMetrics.devicePixelRatio;
-#endif
-
     const int titleBarHeight = window()->frameGeometry().height() - window()->geometry().height();
 
-    newWidth = std::min(newWidth, m_screenMetrics.availableSize.width() - 2 * m_sidePadding);
-    newHeight = std::min(newHeight, m_screenMetrics.availableSize.height() - titleBarHeight - m_topPadding - m_bottomPadding);
+    const int requiredWidth = requiredSize->getWidth() / m_screenMetrics.devicePixelRatio;
+    const int requiredHeight = requiredSize->getHeight() / m_screenMetrics.devicePixelRatio;
 
+    const int availableWidth = m_screenMetrics.availableSize.width() - 2 * m_sidePadding;
+    const int availableHeight = m_screenMetrics.availableSize.height() - titleBarHeight - m_topPadding - m_bottomPadding;
+
+    const int newWidth = std::min(requiredWidth, availableWidth);
+    const int newHeight = std::min(requiredHeight, availableHeight);
+
+    const int implicitWidth = std::max(m_minimumWidth, newWidth);
+    setImplicitWidth(implicitWidth);
     setImplicitHeight(newHeight);
-    setImplicitWidth(newWidth);
 
-    m_vstWindow->setGeometry(m_sidePadding, m_topPadding, this->implicitWidth(), this->implicitHeight());
+    const int sidePadding = std::max(m_sidePadding, (implicitWidth - newWidth) / 2);
+    m_vstWindow->setGeometry(sidePadding, m_topPadding, newWidth, newHeight);
 
-    setVstSize(*view, newWidth, newHeight);
+    Steinberg::ViewRect vstSize;
+    vstSize.right = newWidth * m_screenMetrics.devicePixelRatio;
+    vstSize.bottom = newHeight * m_screenMetrics.devicePixelRatio;
+    // Some VST plugins won't cooperate and size down, in which case their UI will be clipped
+    // by `m_vstWindow`. This is better than an overflow, because the host might want to place
+    // control buttons below the UI, and these ought not to be hidden.
+    view->onSize(&vstSize);
 
     return Steinberg::kResultTrue;
-}
-
-void VstView::setVstSize(Steinberg::IPlugView& view, int width, int height)
-{
-    const auto dpi = m_screenMetrics.devicePixelRatio;
-    Steinberg::ViewRect vstSize;
-    vstSize.right = width * dpi;
-    vstSize.bottom = height * dpi;
-    view.onSize(&vstSize);
-}
-
-QSize VstView::vstSize(Steinberg::IPlugView&) const
-{
-    Steinberg::ViewRect size;
-    m_view->getSize(&size);
-    const auto dpi = m_screenMetrics.devicePixelRatio;
-    return QSize(size.getWidth() / dpi, size.getHeight() / dpi);
 }
 
 void VstView::updateScreenMetrics()
@@ -242,7 +221,7 @@ void VstView::updateScreenMetrics()
 
 void VstView::updateViewGeometry()
 {
-    IF_ASSERT_FAILED(m_view) {
+    if (!m_view) {
         return;
     }
 
@@ -283,6 +262,7 @@ void VstView::setsidePadding(int sidePadding)
     }
     m_sidePadding = sidePadding;
     emit sidePaddingChanged();
+    updateViewGeometry();
 }
 
 int VstView::topPadding() const
@@ -297,6 +277,7 @@ void VstView::setTopPadding(int topPadding)
     }
     m_topPadding = topPadding;
     emit topPaddingChanged();
+    updateViewGeometry();
 }
 
 int VstView::bottomPadding() const
@@ -311,4 +292,20 @@ void VstView::setBottomPadding(int bottomPadding)
     }
     m_bottomPadding = bottomPadding;
     emit bottomPaddingChanged();
+    updateViewGeometry();
+}
+
+int VstView::minimumWidth() const
+{
+    return m_minimumWidth;
+}
+
+void VstView::setMinimumWidth(int minimumWidth)
+{
+    if (m_minimumWidth == minimumWidth) {
+        return;
+    }
+    m_minimumWidth = minimumWidth;
+    emit minimumWidthChanged();
+    updateViewGeometry();
 }

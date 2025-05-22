@@ -37,6 +37,7 @@ class VstView : public QQuickItem, public Steinberg::IPlugFrame
     Q_PROPERTY(int sidePadding READ sidePadding WRITE setsidePadding NOTIFY sidePaddingChanged FINAL)
     Q_PROPERTY(int topPadding READ topPadding WRITE setTopPadding NOTIFY topPaddingChanged FINAL)
     Q_PROPERTY(int bottomPadding READ bottomPadding WRITE setBottomPadding NOTIFY bottomPaddingChanged FINAL)
+    Q_PROPERTY(int minimumWidth READ minimumWidth WRITE setMinimumWidth NOTIFY minimumWidthChanged FINAL)
 
     muse::Inject<IVstInstancesRegister> instancesRegister;
 
@@ -60,10 +61,15 @@ public:
 
     int sidePadding() const;
     void setsidePadding(int);
+
     int topPadding() const;
     void setTopPadding(int);
+
     int bottomPadding() const;
     void setBottomPadding(int);
+
+    int minimumWidth() const;
+    void setMinimumWidth(int);
 
 signals:
     void instanceIdChanged();
@@ -71,36 +77,30 @@ signals:
     void sidePaddingChanged();
     void topPaddingChanged();
     void bottomPaddingChanged();
+    void minimumWidthChanged();
 
 private:
 
     struct ScreenMetrics {
         QSize availableSize;
         double devicePixelRatio = 0.0;
-        bool operator==(const ScreenMetrics& other) const
-        {
-            return availableSize == other.availableSize && devicePixelRatio == other.devicePixelRatio;
-        }
-
-        ScreenMetrics& operator=(const ScreenMetrics& other)
-        {
-            availableSize = other.availableSize;
-            devicePixelRatio = other.devicePixelRatio;
-            return *this;
-        }
     };
 
     void updateScreenMetrics();
     void updateViewGeometry();
-    QSize vstSize(Steinberg::IPlugView&) const;
-    void setVstSize(Steinberg::IPlugView&, int width, int height);
 
     int m_instanceId = -1;
     IVstPluginInstancePtr m_instance;
-    QWindow* m_vstWindow = nullptr;
     PluginViewPtr m_view;
     QString m_title;
     RunLoop* m_runLoop = nullptr;
+
+    // VST plugins expect to be given an entire window where to draw their UI.
+    // Since the host might want to place some controls (like a bypass button, a preset dropdown, etc)
+    // or even just padding around the UI, a child window is needed for the exclusive use of the plugin.
+    // `VstView` will position this child window on top of its parent window, according to the
+    // different padding properties it exposes.
+    QWindow* m_vstWindow = nullptr;
 
     QScreen* m_currentScreen = nullptr;
     ScreenMetrics m_screenMetrics;
@@ -109,5 +109,6 @@ private:
     int m_sidePadding = 0;
     int m_topPadding = 0;
     int m_bottomPadding = 0;
+    int m_minimumWidth = 0;
 };
 }
