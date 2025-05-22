@@ -73,21 +73,6 @@ static QString filterToString(const std::vector<std::string>& filter)
 
 #endif
 
-IInteractive::Result Interactive::question(const std::string& contentTitle, const std::string& text,
-                                           const Buttons& buttons,
-                                           const Button& def,
-                                           const Options& options,
-                                           const std::string& dialogTitle) const
-{
-    return question(contentTitle, Text(text), buttonDataList(buttons), int(def), options, dialogTitle);
-}
-
-IInteractive::Result Interactive::question(const std::string& contentTitle, const Text& text, const ButtonDatas& btns, int defBtn,
-                                           const Options& options, const std::string& dialogTitle) const
-{
-    return standardDialogResult(provider()->question(contentTitle, text, btns, defBtn, options, dialogTitle));
-}
-
 IInteractive::ButtonData Interactive::buttonData(Button b) const
 {
     constexpr bool accent = true;
@@ -125,60 +110,118 @@ IInteractive::ButtonData Interactive::buttonData(Button b) const
     return ButtonData(int(b), "");
 }
 
-IInteractive::Result Interactive::info(const std::string& contentTitle, const std::string& text, const Buttons& buttons,
-                                       int defBtn,
-                                       const Options& options,
-                                       const std::string& dialogTitle) const
+async::Promise<IInteractive::Result> Interactive::openStandartAsync(const std::string& type, const std::string& contentTitle,
+                                                                    const Text& text,
+                                                                    const ButtonDatas& buttons, int defBtn,
+                                                                    const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->info(contentTitle, text, buttonDataList(buttons), defBtn, options, dialogTitle));
+    auto format = [](IInteractive::TextFormat f) {
+        switch (f) {
+        case IInteractive::TextFormat::Auto:      return Qt::AutoText;
+        case IInteractive::TextFormat::PlainText: return Qt::PlainText;
+        case IInteractive::TextFormat::RichText:  return Qt::RichText;
+        }
+        return Qt::PlainText;
+    };
+
+    UriQuery q("muse://interactive/standard");
+    q.add("type", type)
+    .add("contentTitle", contentTitle)
+    .add("text", text.text)
+    .add("textFormat", (int)format(text.format))
+    .add("detailedText", text.detailedText)
+    .add("defaultButtonId", defBtn)
+    .add("withIcon", options.testFlag(IInteractive::Option::WithIcon))
+    .add("withDontShowAgainCheckBox", options.testFlag(IInteractive::Option::WithDontShowAgainCheckBox))
+    .add("dialogTitle", dialogTitle);
+
+    ValList buttonsList;
+    ValList customButtonsList;
+    if (buttons.empty()) {
+        buttonsList.push_back(Val(static_cast<int>(IInteractive::Button::Ok)));
+    } else {
+        for (const IInteractive::ButtonData& buttonData: buttons) {
+            ValMap customButton;
+            customButton["text"] = Val(buttonData.text);
+            customButton["buttonId"] = Val(buttonData.btn);
+            customButton["role"] = Val(static_cast<int>(buttonData.role));
+            customButton["isAccent"] = Val(buttonData.accent);
+            customButton["isLeftSide"] = Val(buttonData.leftSide);
+            customButtonsList.push_back(Val(customButton));
+        }
+    }
+
+    q.add("buttons", Val(buttonsList))
+    .add("customButtons", Val(customButtonsList));
+
+    async::Promise<Val> promise = provider()->openAsync(q);
+
+    return async::make_promise<Result>([promise, this](auto resolve, auto reject) {
+        async::Promise<Val> mut = promise;
+        mut.onResolve(this, [resolve](const Val& val) {
+            QVariantMap resultMap = val.toQVariant().toMap();
+            int btn = resultMap["buttonId"].toInt();
+            bool showAgain = resultMap["showAgain"].toBool();
+            (void)resolve(IInteractive::Result(btn, showAgain));
+        }).onReject(this, [resolve, reject](int code, const std::string& err) {
+            //! NOTE To simplify writing the handlers
+            (void)resolve(IInteractive::Result((int)IInteractive::Button::Cancel, false));
+            (void)reject(code, err);
+        });
+        return async::Promise<IInteractive::Result>::Result::unchecked();
+    });
 }
 
-IInteractive::Result Interactive::info(const std::string& contentTitle, const Text& text, const ButtonDatas& buttons, int defBtn,
-                                       const Options& options, const std::string& dialogTitle) const
+IInteractive::Result Interactive::questionSync(const std::string& contentTitle, const Text& text, const ButtonDatas& btns, int defBtn,
+                                               const Options& options, const std::string& dialogTitle)
+{
+    return standardDialogResult(provider()->question(contentTitle, text, btns, defBtn, options, dialogTitle));
+}
+
+async::Promise<IInteractive::Result> Interactive::question(const std::string& contentTitle, const Text& text,
+                                                           const ButtonDatas& buttons, int defBtn,
+                                                           const Options& options, const std::string& dialogTitle)
+{
+    return openStandartAsync("QUESTION", contentTitle, text, buttons, defBtn, options, dialogTitle);
+}
+
+IInteractive::Result Interactive::infoSync(const std::string& contentTitle, const Text& text, const ButtonDatas& buttons, int defBtn,
+                                           const Options& options, const std::string& dialogTitle)
 {
     return standardDialogResult(provider()->info(contentTitle, text, buttons, defBtn, options, dialogTitle));
 }
 
-Interactive::Result Interactive::warning(const std::string& contentTitle, const std::string& text, const Buttons& buttons,
-                                         const Button& defBtn, const Options& options, const std::string& dialogTitle) const
+async::Promise<IInteractive::Result> Interactive::info(const std::string& contentTitle, const Text& text,
+                                                       const ButtonDatas& buttons, int defBtn,
+                                                       const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->warning(contentTitle, text, {}, buttonDataList(buttons), int(defBtn), options, dialogTitle));
+    return openStandartAsync("INFO", contentTitle, text, buttons, defBtn, options, dialogTitle);
 }
 
-IInteractive::Result Interactive::warning(const std::string& contentTitle, const Text& text, const ButtonDatas& buttons,
-                                          int defBtn,
-                                          const Options& options,
-                                          const std::string& dialogTitle) const
+IInteractive::Result Interactive::warningSync(const std::string& contentTitle, const Text& text, const ButtonDatas& buttons, int defBtn,
+                                              const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->warning(contentTitle, text, {}, buttons, defBtn, options, dialogTitle));
+    return standardDialogResult(provider()->warning(contentTitle, text, text.detailedText, buttons, defBtn, options, dialogTitle));
 }
 
-IInteractive::Result Interactive::warning(const std::string& contentTitle, const Text& text, const std::string& detailedText,
-                                          const ButtonDatas& buttons, int defBtn,
-                                          const Options& options, const std::string& dialogTitle) const
+async::Promise<IInteractive::Result> Interactive::warning(const std::string& contentTitle, const Text& text,
+                                                          const ButtonDatas& buttons, int defBtn,
+                                                          const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->warning(contentTitle, text, detailedText, buttons, defBtn, options, dialogTitle));
+    return openStandartAsync("WARNING", contentTitle, text, buttons, defBtn, options, dialogTitle);
 }
 
-IInteractive::Result Interactive::error(const std::string& contentTitle, const std::string& text,
-                                        const Buttons& buttons, const Button& defBtn,
-                                        const Options& options, const std::string& dialogTitle) const
+IInteractive::Result Interactive::errorSync(const std::string& contentTitle, const Text& text, const ButtonDatas& buttons, int defBtn,
+                                            const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->error(contentTitle, text, {}, buttonDataList(buttons), int(defBtn), options, dialogTitle));
+    return standardDialogResult(provider()->error(contentTitle, text, text.detailedText, buttons, defBtn, options, dialogTitle));
 }
 
-IInteractive::Result Interactive::error(const std::string& contentTitle, const Text& text,
-                                        const ButtonDatas& buttons, int defBtn,
-                                        const Options& options, const std::string& dialogTitle) const
+async::Promise<IInteractive::Result> Interactive::error(const std::string& contentTitle, const Text& text,
+                                                        const ButtonDatas& buttons, int defBtn,
+                                                        const Options& options, const std::string& dialogTitle)
 {
-    return standardDialogResult(provider()->error(contentTitle, text, {}, buttons, defBtn, options, dialogTitle));
-}
-
-IInteractive::Result Interactive::error(const std::string& contentTitle, const Text& text, const std::string& detailedText,
-                                        const ButtonDatas& buttons, int defBtn,
-                                        const Options& options, const std::string& dialogTitle) const
-{
-    return standardDialogResult(provider()->error(contentTitle, text, detailedText, buttons, defBtn, options, dialogTitle));
+    return openStandartAsync("ERROR", contentTitle, text, buttons, defBtn, options, dialogTitle);
 }
 
 Ret Interactive::showProgress(const std::string& title, Progress* progress) const
@@ -267,6 +310,11 @@ RetVal<Val> Interactive::open(const UriQuery& uri) const
     }
 
     return provider()->open(newQuery);
+}
+
+async::Promise<Val> Interactive::openAsync(const UriQuery& uri)
+{
+    return provider()->openAsync(uri);
 }
 
 RetVal<bool> Interactive::isOpened(const std::string& uri) const
@@ -390,16 +438,4 @@ Ret Interactive::revealInFileBrowser(const io::path_t& filePath) const
 #endif
     io::path_t dirPath = io::dirpath(filePath);
     return openUrl(QUrl::fromLocalFile(dirPath.toQString()));
-}
-
-IInteractive::ButtonDatas Interactive::buttonDataList(const Buttons& buttons) const
-{
-    ButtonDatas result;
-    result.reserve(buttons.size());
-
-    for (Button b : buttons) {
-        result.push_back(buttonData(b));
-    }
-
-    return result;
 }

@@ -65,6 +65,16 @@ void InteractiveTestsModel::closeSampleDialog()
     LOGI() << "cpp: after close";
 }
 
+void InteractiveTestsModel::openSampleDialogAsyncWithPromise()
+{
+    auto promise = interactive()->openAsync("muse://devtools/interactive/sample?color=#D24358");
+    promise.onResolve(this, [](const Val& val) {
+        LOGI() << "success val: " << val.toString();
+    }).onReject(this, [](int code, const std::string& err) {
+        LOGE() << "faile or cancel code: " << code << ", err: " << err;
+    });
+}
+
 void InteractiveTestsModel::openWidgetDialog()
 {
     LOGI() << "cpp: before open ";
@@ -99,7 +109,7 @@ QString InteractiveTestsModel::currentUri() const
 
 void InteractiveTestsModel::question()
 {
-    IInteractive::Result result = interactive()->question(
+    IInteractive::Result result = interactive()->questionSync(
         "Do you really want to delete the 'xxx' workspace?", "",
         { interactive()->buttonData(IInteractive::Button::No),
           interactive()->buttonData(IInteractive::Button::Yes) }, 0,
@@ -112,10 +122,28 @@ void InteractiveTestsModel::question()
     }
 }
 
+void InteractiveTestsModel::questionByUri()
+{
+    auto promise = interactive()->question(
+        "Do you really want to delete the 'xxx' workspace?", "",
+        { IInteractive::Button::No, IInteractive::Button::Yes }, IInteractive::Button::NoButton,
+        IInteractive::Option::WithIcon);
+
+    promise.onResolve(this, [](const IInteractive::Result& res) {
+        if (res.standardButton() == IInteractive::Button::Yes) {
+            LOGI() << "Yes!!";
+        } else {
+            LOGI() << "No!!";
+        }
+    }).onReject(this, [](int code, const std::string& err) {
+        LOGE() << code << err;
+    });
+}
+
 void InteractiveTestsModel::customQuestion()
 {
     int maybeBtn = int(IInteractive::Button::CustomButton) + 1;
-    IInteractive::Result result = interactive()->question("Test", "It works?", {
+    IInteractive::Result result = interactive()->questionSync("Test", "It works?", {
         IInteractive::ButtonData(maybeBtn, "Maybe"),
         interactive()->buttonData(IInteractive::Button::No)
     });
@@ -129,20 +157,22 @@ void InteractiveTestsModel::customQuestion()
 
 void InteractiveTestsModel::information()
 {
-    IInteractive::Result result = interactive()->info("Tuplet cannot cross barlines",
-                                                      std::string(), {}, 0,
-                                                      IInteractive::Option::WithIcon
-                                                      | IInteractive::Option::WithDontShowAgainCheckBox);
-    LOGD() << interactive()->buttonData(result.standardButton()).text;
+    auto result = interactive()->info("Tuplet cannot cross barlines",
+                                      std::string(), {}, 0,
+                                      IInteractive::Option::WithIcon
+                                      | IInteractive::Option::WithDontShowAgainCheckBox)
+                  .onResolve(this, [this](const IInteractive::Result& res) {
+        LOGD() << interactive()->buttonData(res.standardButton()).text;
+    });
 }
 
 void InteractiveTestsModel::warning()
 {
-    IInteractive::Result result = interactive()->warning("Do you want to save changes to the score “Untitled” before closing?",
-                                                         "Your changes will be lost if you don’t save them.",
-                                                         { interactive()->buttonData(IInteractive::Button::DontSave),
-                                                           interactive()->buttonData(IInteractive::Button::Save),
-                                                           interactive()->buttonData(IInteractive::Button::Cancel) });
+    IInteractive::Result result = interactive()->warningSync("Do you want to save changes to the score “Untitled” before closing?",
+                                                             "Your changes will be lost if you don’t save them.",
+                                                             { interactive()->buttonData(IInteractive::Button::DontSave),
+                                                               interactive()->buttonData(IInteractive::Button::Save),
+                                                               interactive()->buttonData(IInteractive::Button::Cancel) });
 
     if (result.standardButton() == IInteractive::Button::DontSave) {
         LOGI() << "Don’t save!!";
@@ -155,16 +185,17 @@ void InteractiveTestsModel::warning()
 
 void InteractiveTestsModel::critical()
 {
-    IInteractive::Result result = interactive()->error("Cannot read file C:/Users/Username/Desktop/Composition.mscz",
-                                                       std::string("An error has occurred when trying to open this file"));
+    IInteractive::Result result = interactive()->errorSync("Cannot read file C:/Users/Username/Desktop/Composition.mscz",
+                                                           std::string("An error has occurred when trying to open this file"));
     LOGD() << interactive()->buttonData(result.standardButton()).text;
 }
 
 void InteractiveTestsModel::criticalWithDetailedText()
 {
-    IInteractive::Result result = interactive()->error("Cannot read file C:/Users/Username/Desktop/Composition.mscz",
-                                                       std::string("An error has occurred when trying to open this file"),
-                                                       std::string("Permission denied"));
+    IInteractive::Text text;
+    text.text = std::string("An error has occurred when trying to open this file");
+    text.detailedText = std::string("Permission denied");
+    IInteractive::Result result = interactive()->errorSync("Cannot read file C:/Users/Username/Desktop/Composition.mscz", text);
     LOGD() << interactive()->buttonData(result.standardButton()).text;
 }
 
