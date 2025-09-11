@@ -34,6 +34,7 @@ set(qt_components
     ShaderTools
     Xml
     Svg
+    Graphs
 
     Core5Compat
 )
@@ -49,6 +50,7 @@ set(QT_LIBRARIES
     Qt::QuickWidgets
     Qt::Xml
     Qt::Svg
+    Qt::Graphs
 
     Qt::Core5Compat
 )
