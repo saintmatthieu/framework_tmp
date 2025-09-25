@@ -40,14 +40,35 @@ public:
     {
         m_isCanceled = false;
         m_isStarted = true;
+        m_prevCurrent = -1;
+        m_prevTotal = -1;
         m_started.notify();
     }
 
     async::Notification& started() { return m_started; }
     bool isStarted() const { return m_isStarted; }
 
+    void setMaxNumIncrements(int64_t maxNumIncrements) { m_maxNumIncrements = maxNumIncrements; }
+
     // progress
-    void progress(int64_t current, int64_t total, const std::string& msg = {}) { m_progressChanged.send(current, total, msg); }
+    bool progress(int64_t current, int64_t total, const std::string& msg = {})
+    {
+        if (m_maxNumIncrements > 0 && total > m_maxNumIncrements) {
+            current *= static_cast<double>(m_maxNumIncrements) / total;
+            total = m_maxNumIncrements;
+        }
+
+        if (current == m_prevCurrent && total == m_prevTotal) {
+            return false;
+        }
+
+        m_prevCurrent = current;
+        m_prevTotal = total;
+        m_progressChanged.send(current, total, msg);
+
+        return true;
+    }
+
     async::Channel<int64_t /*current*/, int64_t /*total*/, std::string /*title*/>& progressChanged()
     {
         return m_progressChanged;
@@ -56,6 +77,8 @@ public:
     void finish(const ProgressResult& res)
     {
         m_isStarted = false;
+        m_prevCurrent = -1;
+        m_prevTotal = -1;
         m_finished.send(res);
     }
 
@@ -77,6 +100,9 @@ private:
     async::Notification m_canceled;
     bool m_isStarted = false;
     bool m_isCanceled = false;
+    int64_t m_prevCurrent = -1;
+    int64_t m_prevTotal = -1;
+    int64_t m_maxNumIncrements = 0;
 
     async::Channel<int64_t /*current*/, int64_t /*total*/, std::string /*title*/> m_progressChanged;
 };
