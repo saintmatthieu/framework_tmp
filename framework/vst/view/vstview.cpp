@@ -149,6 +149,19 @@ void VstView::init()
     });
     m_screenMetricsTimer.start(std::chrono::milliseconds { 100 });
 
+    connect(this, &QQuickItem::enabledChanged, this, [this]() {
+        if (!isEnabled() || !m_disablingWindow) {
+            m_disablingWindow = new QWindow(m_vstWindow);
+            m_disablingWindow->setGeometry(m_vstWindow->geometry());
+            m_disablingWindow->setCursor(Qt::ForbiddenCursor);
+            m_disablingWindow->show();
+        } else {
+            m_disablingWindow->hide();
+            delete m_disablingWindow;
+            m_disablingWindow = nullptr;
+        }
+    });
+
     updateViewGeometry();
 
     m_vstWindow->show();

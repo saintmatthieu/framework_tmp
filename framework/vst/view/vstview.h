@@ -102,6 +102,8 @@ private:
     // different padding properties it exposes.
     QWindow* m_vstWindow = nullptr;
 
+    QWindow* m_disablingWindow = nullptr;
+
     bool m_resizeViewCalled = false;
 
     QScreen* m_currentScreen = nullptr;
