@@ -46,6 +46,9 @@ set(MODULE_SRC
     ${CMAKE_CURRENT_LIST_DIR}/internal/audiopluginmetareaderregister.h
     ${CMAKE_CURRENT_LIST_DIR}/internal/registeraudiopluginsscenario.cpp
     ${CMAKE_CURRENT_LIST_DIR}/internal/registeraudiopluginsscenario.h
+
+    ${CMAKE_CURRENT_LIST_DIR}/view/audiopluginview.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/view/audiopluginview.h
 )
 
 setup_module()

@@ -26,10 +26,11 @@
 
 #include "global/modularity/ioc.h"
 #include "../ivstinstancesregister.h"
+#include "audioplugins/view/audiopluginview.h"
 
 namespace muse::vst {
 class RunLoop;
-class VstView : public QQuickItem, public Steinberg::IPlugFrame
+class VstView : public audioplugins::AudioPluginView, public Steinberg::IPlugFrame
 {
     Q_OBJECT
     Q_PROPERTY(int instanceId READ instanceId WRITE setInstanceId NOTIFY instanceIdChanged FINAL)
@@ -50,7 +51,6 @@ public:
     int instanceId() const;
     void setInstanceId(int newInstanceId);
 
-    Q_INVOKABLE void init();
     Q_INVOKABLE void deinit();
 
     // IPlugFrame
@@ -80,6 +80,8 @@ signals:
     void minimumWidthChanged();
 
 private:
+    void doInit() override;
+    QWindow* pluginWindow() override { return m_vstWindow; }
 
     struct ScreenMetrics {
         QSize availableSize;
@@ -101,8 +103,6 @@ private:
     // `VstView` will position this child window on top of its parent window, according to the
     // different padding properties it exposes.
     QWindow* m_vstWindow = nullptr;
-
-    QWindow* m_disablingWindow = nullptr;
 
     bool m_resizeViewCalled = false;
 
