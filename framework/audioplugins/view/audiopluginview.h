@@ -27,15 +27,24 @@ namespace muse::audioplugins {
 class AudioPluginView : public QQuickItem
 {
     Q_OBJECT
+    Q_PROPERTY(int instanceId READ instanceId WRITE setInstanceId NOTIFY instanceIdChanged FINAL)
 
 public:
     explicit AudioPluginView(QQuickItem* parent = nullptr);
 
     Q_INVOKABLE void init();
 
+    int instanceId() const;
+    void setInstanceId(int newInstanceId);
+
+signals:
+    void instanceIdChanged();
+
 private:
     virtual void doInit() {}
     virtual QWindow* pluginWindow() = 0;
+
+    int m_instanceId = -1;
     QWindow* m_disablingWindow = nullptr;
 };
 }

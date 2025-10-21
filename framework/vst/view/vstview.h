@@ -33,7 +33,6 @@ class RunLoop;
 class VstView : public audioplugins::AudioPluginView, public Steinberg::IPlugFrame
 {
     Q_OBJECT
-    Q_PROPERTY(int instanceId READ instanceId WRITE setInstanceId NOTIFY instanceIdChanged FINAL)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged FINAL)
     Q_PROPERTY(int sidePadding READ sidePadding WRITE setsidePadding NOTIFY sidePaddingChanged FINAL)
     Q_PROPERTY(int topPadding READ topPadding WRITE setTopPadding NOTIFY topPaddingChanged FINAL)
@@ -47,9 +46,6 @@ class VstView : public audioplugins::AudioPluginView, public Steinberg::IPlugFra
 public:
     VstView(QQuickItem* parent = nullptr);
     ~VstView();
-
-    int instanceId() const;
-    void setInstanceId(int newInstanceId);
 
     Q_INVOKABLE void deinit();
 
@@ -72,7 +68,6 @@ public:
     void setMinimumWidth(int);
 
 signals:
-    void instanceIdChanged();
     void titleChanged();
     void sidePaddingChanged();
     void topPaddingChanged();
@@ -91,7 +86,6 @@ private:
     void updateScreenMetrics();
     void updateViewGeometry();
 
-    int m_instanceId = -1;
     IVstPluginInstancePtr m_instance;
     PluginViewPtr m_view;
     QString m_title;

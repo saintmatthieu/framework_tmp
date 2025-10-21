@@ -53,3 +53,17 @@ void AudioPluginView::init()
 
     doInit();
 }
+
+int AudioPluginView::instanceId() const
+{
+    return m_instanceId;
+}
+
+void AudioPluginView::setInstanceId(int newInstanceId)
+{
+    if (m_instanceId == newInstanceId) {
+        return;
+    }
+    m_instanceId = newInstanceId;
+    emit instanceIdChanged();
+}

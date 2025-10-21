@@ -102,7 +102,7 @@ VstView::~VstView()
 
 void VstView::doInit()
 {
-    m_instance = instancesRegister()->instanceById(m_instanceId);
+    m_instance = instancesRegister()->instanceById(instanceId());
     IF_ASSERT_FAILED(m_instance) {
         return;
     }
@@ -247,20 +247,6 @@ void VstView::updateViewGeometry()
     m_view->getSize(&size);
 
     resizeView(m_view, &size);
-}
-
-int VstView::instanceId() const
-{
-    return m_instanceId;
-}
-
-void VstView::setInstanceId(int newInstanceId)
-{
-    if (m_instanceId == newInstanceId) {
-        return;
-    }
-    m_instanceId = newInstanceId;
-    emit instanceIdChanged();
 }
 
 QString VstView::title() const
