@@ -23,7 +23,7 @@
 
 #include "log.h"
 
-#include <QWindow>
+#include <QQuickWindow>
 
 using namespace muse::audioplugins;
 
@@ -36,13 +36,28 @@ void AudioPluginView::init()
 {
     connect(this, &QQuickItem::enabledChanged, this, [this]() {
         if (!isEnabled() && !m_disablingWindow) {
-            QWindow* pluginWindow = this->pluginWindow();
+            QWindow* const pluginWindow = this->pluginWindow();
             IF_ASSERT_FAILED(pluginWindow) {
                 return;
             }
-            m_disablingWindow = new QWindow(pluginWindow);
-            m_disablingWindow->setGeometry(pluginWindow->geometry());
-            m_disablingWindow->setCursor(Qt::ForbiddenCursor);
+
+            m_disablingWindow = new QQuickWindow(pluginWindow);
+            m_disablingWindow->setWidth(pluginWindow->width());
+            m_disablingWindow->setHeight(pluginWindow->height());
+            m_disablingWindow->setColor(Qt::transparent);
+
+            QQmlEngine engine;
+            QQmlComponent component(&engine);
+            component.setData(
+                "import QtQuick 2.15\n"
+                "Rectangle { color: 'white'; opacity: 0.25; anchors.fill: parent }",
+                QUrl());
+            QQuickItem* const rect = qobject_cast<QQuickItem*>(component.create());
+            assert(rect);
+            if (rect) {
+                rect->setParentItem(m_disablingWindow->contentItem());
+            }
+
             m_disablingWindow->show();
         } else if (isEnabled() && m_disablingWindow) {
             m_disablingWindow->hide();

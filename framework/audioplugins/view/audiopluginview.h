@@ -45,6 +45,6 @@ private:
     virtual QWindow* pluginWindow() = 0;
 
     int m_instanceId = -1;
-    QWindow* m_disablingWindow = nullptr;
+    QQuickWindow* m_disablingWindow = nullptr;
 };
 }
