@@ -174,7 +174,8 @@ enum class AudioResourceType {
     MuseSamplerSoundPack,
     Lv2Plugin,
     AudioUnit,
-    NyquistPlugin
+    NyquistPlugin,
+    BuiltinEffect,
 };
 
 static const std::map<AudioResourceType, QString> RESOURCE_TYPE_MAP = {
@@ -280,6 +281,7 @@ struct AudioFxParams {
         case AudioResourceType::FluidSoundfont:
         case AudioResourceType::MuseSamplerSoundPack:
         case AudioResourceType::NyquistPlugin:
+        case AudioResourceType::BuiltinEffect:
         case AudioResourceType::Undefined: break;
         }
 
@@ -364,6 +366,7 @@ inline AudioSourceType sourceTypeFromResourceType(AudioResourceType type)
     case AudioResourceType::Lv2Plugin:
     case AudioResourceType::MusePlugin:
     case AudioResourceType::NyquistPlugin:
+    case AudioResourceType::BuiltinEffect:
     case AudioResourceType::Undefined: break;
     }
 

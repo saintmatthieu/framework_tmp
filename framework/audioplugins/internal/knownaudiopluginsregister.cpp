@@ -39,6 +39,7 @@ static const std::map<audio::AudioResourceType, std::string> RESOURCE_TYPE_TO_ST
     { audio::AudioResourceType::Lv2Plugin, "Lv2Plugin" },
     { audio::AudioResourceType::AudioUnit, "AudioUnit" },
     { audio::AudioResourceType::NyquistPlugin, "NyquistPlugin" },
+    { audio::AudioResourceType::BuiltinEffect, "BuiltinEffect" },
 };
 
 static JsonObject attributesToJson(const AudioResourceAttributes& attributes)
